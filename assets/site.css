@@ -130,6 +130,13 @@ a.card-feature:hover{border-color:var(--accent)}
 .cta-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 32px}
 .cta-row h2{margin:0}
 
+.lectures{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.lecture{display:flex;gap:16px;align-items:flex-start;padding:20px 24px;border-radius:12px;background:var(--surface);border:1px solid var(--border)}
+.lecture .year{flex:0 0 auto;font-size:14px;font-weight:700;color:var(--accent);padding-top:2px}
+.lecture div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.lecture b{font-size:17px}
+.lecture div span{font-size:14px;color:var(--text2)}
+
 /* apply page */
 .apply{display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;padding-top:64px;padding-bottom:80px}
 .apply-intro{flex:1 1 320px;min-width:0}
