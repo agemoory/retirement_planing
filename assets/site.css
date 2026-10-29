@@ -80,7 +80,7 @@ a.card-feature:hover{border-color:var(--accent)}
 .video{position:relative;width:100%;max-width:880px;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:var(--surface2);border:1px solid var(--border)}
 .video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 
-.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px 16px;min-height:120px}
+.video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px 16px;min-height:120px}
 .vitem{min-width:0}
 .vthumb{position:relative;display:block;width:100%;aspect-ratio:16/9;padding:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface2);cursor:pointer}
 .vthumb img{width:100%;height:100%;object-fit:cover;display:block}

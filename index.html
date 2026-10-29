@@ -165,7 +165,7 @@
   var box = document.getElementById('yt');
   var PLAYLIST = 'UUj6xeOFJopNMWaW1J7c9bAw';
   var SOURCES = ['https://raw.githubusercontent.com/agemoory/retirement_planing/main/data/videos.json', '/data/videos.json'];
-  var MAX = 8;
+  var MAX = 3;
 
   function fallback() {
     box.className = 'video';
@@ -220,12 +220,8 @@
       var t = document.createElement('p');
       t.className = 'vtitle';
       t.textContent = v.title;
-      var d = document.createElement('p');
-      d.className = 'vdate';
-      d.textContent = fmt(v.published) + (v.short ? ' · 숏폼' : '');
       item.appendChild(btn);
       item.appendChild(t);
-      item.appendChild(d);
       box.appendChild(item);
     });
   }
