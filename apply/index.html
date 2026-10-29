@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>상담·강의 신청 · josung.kr</title>
+<meta name="description" content="보험 얘기 아니어도 괜찮습니다. 돈 얘기, 일 얘기, 사는 얘기 다 환영해요.">
+<meta property="og:title" content="상담·강의 신청 · josung.kr">
+<meta property="og:description" content="보험 얘기 아니어도 괜찮습니다. 돈 얘기, 일 얘기, 사는 얘기 다 환영해요.">
+<meta property="og:url" content="https://josung.kr/apply/">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+
+<header class="site-header">
+<div class="wrap">
+<a class="brand" href="/"><b>조성</b><span>josung.kr</span></a>
+<nav class="nav" aria-label="주 메뉴">
+<a href="/host/">Host</a>
+<a href="/#tools">계산기</a>
+<a href="/#suremate">슈어메이트</a>
+<a href="/#contents">콘텐츠</a>
+<a href="/apply/" aria-current="page">신청</a>
+</nav>
+</div>
+</header>
+
+<main class="wrap apply">
+<div class="apply-intro">
+<p class="eyebrow">신청</p>
+<h1>보험 얘기 아니어도<br>괜찮습니다.</h1>
+<p class="muted" style="margin:0;font-size:18px">돈 얘기, 일 얘기, 사는 얘기 다 환영해요.</p>
+<div class="steps">
+<div><b>1</b><span>신청서는 따로 저장하지 않고, 호스트에게 메일로 바로 전달됩니다.</span></div>
+<div><b>2</b><span>확인하는 대로 직접 연락드려요.</span></div>
+<div><b>3</b><span>상담료는 따로 받지 않습니다.</span></div>
+</div>
+</div>
+
+<div class="form-card">
+<div id="form-area">
+<div class="tabs" role="tablist" aria-label="신청 종류">
+<button type="button" role="tab" id="tab-consult" aria-selected="true" aria-controls="apply-form">상담신청</button>
+<button type="button" role="tab" id="tab-lecture" aria-selected="false" aria-controls="apply-form">강의신청</button>
+</div>
+
+<form id="apply-form" novalidate>
+<input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" style="display:none">
+
+<div class="field lecture-only" hidden>
+<label for="f-org">기관·회사명 <span class="req">(필수)</span></label>
+<input id="f-org" name="org" type="text" placeholder="예: OO산업단지 협의회">
+<span class="err" id="e-org"></span>
+</div>
+
+<div class="row">
+<div class="field">
+<label for="f-name"><span id="name-label">이름</span> <span class="req">(필수)</span></label>
+<input id="f-name" name="name" type="text" autocomplete="name">
+<span class="err" id="e-name"></span>
+</div>
+<div class="field">
+<label for="f-phone">연락처 <span class="req">(필수)</span></label>
+<input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="010-0000-0000">
+<span class="err" id="e-phone"></span>
+</div>
+</div>
+
+<div class="row lecture-only" hidden>
+<div class="field">
+<label for="f-email">이메일</label>
+<input id="f-email" name="email" type="email" autocomplete="email">
+</div>
+<div class="field">
+<label for="f-sched">희망 일정 · 대상 인원</label>
+<input id="f-sched" name="schedule" type="text" placeholder="예: 12월 중순 · 30명">
+</div>
+</div>
+
+<fieldset class="field consult-only">
+<legend>어떤 이야기를 나누고 싶으세요?</legend>
+<div class="chips">
+<label><input type="radio" name="topic" value="보험" checked><span>보험</span></label>
+<label><input type="radio" name="topic" value="재무설계"><span>재무설계</span></label>
+<label><input type="radio" name="topic" value="은퇴·연금"><span>은퇴·연금</span></label>
+<label><input type="radio" name="topic" value="그냥 이야기"><span>그냥 이야기</span></label>
+</div>
+</fieldset>
+
+<fieldset class="field lecture-only" hidden>
+<legend>강의 분야</legend>
+<div class="chips">
+<label><input type="radio" name="field" value="수출기업 PL" checked><span>수출기업 PL</span></label>
+<label><input type="radio" name="field" value="설계사 교육"><span>설계사 교육</span></label>
+<label><input type="radio" name="field" value="재무설계·은퇴설계"><span>재무설계·은퇴설계</span></label>
+<label><input type="radio" name="field" value="기타"><span>기타</span></label>
+</div>
+</fieldset>
+
+<div class="field consult-only">
+<label for="f-time">연락 편한 시간</label>
+<input id="f-time" name="time" type="text" placeholder="예: 평일 저녁 7시 이후">
+</div>
+
+<div class="field">
+<label for="f-msg" id="msg-label">하고 싶은 이야기</label>
+<textarea id="f-msg" name="message" rows="5" placeholder="짧아도 괜찮아요. 무슨 이야기인지만 알려주세요."></textarea>
+</div>
+
+<div class="consent">
+<label for="f-agree">
+<input id="f-agree" name="agree" type="checkbox">
+<span><span id="consent-text">상담 연락을 위해 이름·연락처를 수집합니다. 상담 종료 후 1년 내 파기하며, 동의하지 않으시면 신청이 어렵습니다.</span> <span class="req">(필수)</span> <a href="/privacy/" target="_blank" rel="noopener">처리방침 보기</a></span>
+</label>
+<span class="err" id="e-agree" style="display:block;padding-left:30px"></span>
+</div>
+
+<span class="err" id="e-send" role="alert"></span>
+<button type="submit" class="btn btn-primary submit" id="submit-btn">상담 신청 보내기</button>
+</form>
+</div>
+
+<div class="done" id="done" hidden>
+<span class="check"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#124D35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg></span>
+<h2 tabindex="-1" id="done-title">잘 받았습니다.</h2>
+<p id="done-text">곧 직접 연락드릴게요. 그때 편하게 이야기 나눠요.</p>
+<div class="btns">
+<a class="btn btn-ghost" href="/">홈으로 돌아가기</a>
+<button type="button" class="btn" id="again" style="background:transparent;color:var(--accent)">하나 더 신청하기</button>
+</div>
+</div>
+</div>
+</main>
+
+<footer class="site-footer" style="padding-top:0">
+<div class="wrap">
+<div class="legal">
+<span>㈜스타인스 보험대리점 · 대표 조성 · josung@kakao.com</span>
+<span><a href="/privacy/">개인정보처리방침</a> · 신청 내용 전송은 메일 발송 서비스에 위탁합니다.</span>
+</div>
+</div>
+</footer>
+
+<script>
+(function () {
+  // Web3Forms access key: 발급받은 키를 여기에 넣으면 메일로 바로 전송됩니다.
+  var ACCESS_KEY = 'e550c1f0-16c0-413b-9ec3-60c35d010c8f';
+  var MAIL_TO = 'josung@kakao.com';
+
+  var form = document.getElementById('apply-form');
+  var tabC = document.getElementById('tab-consult');
+  var tabL = document.getElementById('tab-lecture');
+  var mode = 'consult';
+
+  var TEXT = {
+    consult: {
+      name: '이름', msg: '하고 싶은 이야기',
+      hint: '짧아도 괜찮아요. 무슨 이야기인지만 알려주세요.',
+      consent: '상담 연락을 위해 이름·연락처를 수집합니다. 상담 종료 후 1년 내 파기하며, 동의하지 않으시면 신청이 어렵습니다.',
+      submit: '상담 신청 보내기', done: '곧 직접 연락드릴게요. 그때 편하게 이야기 나눠요.'
+    },
+    lecture: {
+      name: '담당자 이름', msg: '강의 내용 · 요청 사항',
+      hint: '대상, 주제, 원하시는 방향을 편하게 적어주세요.',
+      consent: '강의 협의를 위해 담당자 이름·연락처·이메일을 수집합니다. 협의 종료 후 1년 내 파기하며, 동의하지 않으시면 신청이 어렵습니다.',
+      submit: '강의 신청 보내기', done: '강의 내용 확인하고 담당자님께 직접 연락드릴게요.'
+    }
+  };
+
+  function setMode(m) {
+    mode = m;
+    var lec = m === 'lecture';
+    tabC.setAttribute('aria-selected', String(!lec));
+    tabL.setAttribute('aria-selected', String(lec));
+    document.querySelectorAll('.lecture-only').forEach(function (el) { el.hidden = !lec; });
+    document.querySelectorAll('.consult-only').forEach(function (el) { el.hidden = lec; });
+    var t = TEXT[m];
+    document.getElementById('name-label').textContent = t.name;
+    document.getElementById('msg-label').textContent = t.msg;
+    document.getElementById('f-msg').placeholder = t.hint;
+    document.getElementById('consent-text').textContent = t.consent;
+    document.getElementById('submit-btn').textContent = t.submit;
+    clearErrors();
+  }
+  tabC.addEventListener('click', function () { setMode('consult'); });
+  tabL.addEventListener('click', function () { setMode('lecture'); });
+  function fromHash() { if (location.hash === '#lecture') setMode('lecture'); else if (location.hash === '#consult') setMode('consult'); }
+  fromHash();
+  window.addEventListener('hashchange', fromHash);
+
+  function err(id, msg) { document.getElementById(id).textContent = msg || ''; }
+  function clearErrors() { ['e-org', 'e-name', 'e-phone', 'e-agree', 'e-send'].forEach(function (id) { err(id, ''); }); }
+  ['f-org', 'f-name', 'f-phone'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', function () { err('e-' + id.slice(2), ''); });
+  });
+  document.getElementById('f-agree').addEventListener('change', function () { err('e-agree', ''); });
+
+  function val(name) { var el = form.elements[name]; return el ? String(el.value || '').trim() : ''; }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearErrors();
+    var lec = mode === 'lecture';
+    var first = null;
+    if (lec && !val('org')) { err('e-org', '기관·회사명을 적어주세요.'); first = first || 'f-org'; }
+    if (!val('name')) { err('e-name', '이름을 적어주세요.'); first = first || 'f-name'; }
+    if (!val('phone')) { err('e-phone', '연락받을 번호를 적어주세요.'); first = first || 'f-phone'; }
+    if (!form.elements.agree.checked) { err('e-agree', '동의해주셔야 신청할 수 있어요.'); first = first || 'f-agree'; }
+    if (first) { document.getElementById(first).focus(); return; }
+    if (form.elements.botcheck.checked) return;
+
+    var kind = lec ? '강의신청' : '상담신청';
+    var data = lec ? {
+      '종류': kind, '기관·회사명': val('org'), '담당자': val('name'), '연락처': val('phone'),
+      '이메일': val('email'), '희망 일정·인원': val('schedule'), '강의 분야': val('field'), '요청 사항': val('message')
+    } : {
+      '종류': kind, '이름': val('name'), '연락처': val('phone'), '상담 주제': val('topic'),
+      '연락 편한 시간': val('time'), '하고 싶은 이야기': val('message')
+    };
+    var subject = '[josung.kr ' + kind + '] ' + val('name') + (lec ? ' · ' + val('org') : '');
+
+    if (!ACCESS_KEY) { mailFallback(subject, data); return; }
+
+    var btn = document.getElementById('submit-btn');
+    btn.disabled = true; btn.textContent = '보내는 중…';
+    var payload = Object.assign({ access_key: ACCESS_KEY, subject: subject, from_name: 'josung.kr' }, data);
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (res && res.success) { showDone(); }
+      else { throw new Error('fail'); }
+    }).catch(function () {
+      err('e-send', '전송이 잘 안 됐어요. 잠시 후 다시 시도하거나 ' + MAIL_TO + '로 보내주세요.');
+    }).then(function () {
+      btn.disabled = false; btn.textContent = TEXT[mode].submit;
+    });
+  });
+
+  function mailFallback(subject, data) {
+    var body = Object.keys(data).map(function (k) { return k + ': ' + data[k]; }).join('\n');
+    location.href = 'mailto:' + MAIL_TO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
+
+  function showDone() {
+    document.getElementById('done-text').textContent = TEXT[mode].done;
+    document.getElementById('form-area').hidden = true;
+    document.getElementById('done').hidden = false;
+    document.getElementById('done-title').focus();
+  }
+
+  document.getElementById('again').addEventListener('click', function () {
+    form.reset();
+    setMode(mode);
+    document.getElementById('done').hidden = true;
+    document.getElementById('form-area').hidden = false;
+  });
+})();
+</script>
+</body>
+</html>
