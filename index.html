@@ -101,9 +101,7 @@
 <a class="btn btn-ghost" href="https://www.youtube.com/@fp60seconds" target="_blank" rel="noopener">채널 전체 보기</a>
 </div>
 </div>
-<div class="video">
-<iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UUj6xeOFJopNMWaW1J7c9bAw&rel=0" title="60초 재무설계 유튜브 영상" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</div>
+<div id="yt" class="video-grid" aria-label="최신 영상 목록"></div>
 </div>
 </section>
 
@@ -162,5 +160,85 @@
 </div>
 </footer>
 
+<script>
+(function () {
+  var box = document.getElementById('yt');
+  var PLAYLIST = 'UUj6xeOFJopNMWaW1J7c9bAw';
+  var SOURCES = ['https://raw.githubusercontent.com/agemoory/retirement_planing/main/data/videos.json', '/data/videos.json'];
+  var MAX = 8;
+
+  function fallback() {
+    box.className = 'video';
+    box.innerHTML = '';
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/videoseries?list=' + PLAYLIST + '&rel=0';
+    f.title = '60초 재무설계 최신 영상';
+    f.loading = 'lazy';
+    f.allow = 'accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.allowFullscreen = true;
+    box.appendChild(f);
+  }
+
+  function fmt(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0');
+  }
+
+  function play(item, v) {
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0';
+    f.title = v.title;
+    f.allow = 'autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    f.referrerPolicy = 'strict-origin-when-cross-origin';
+    f.allowFullscreen = true;
+    var thumb = item.querySelector('.vthumb');
+    thumb.innerHTML = '';
+    thumb.appendChild(f);
+  }
+
+  function render(list) {
+    box.innerHTML = '';
+    list.slice(0, MAX).forEach(function (v) {
+      var item = document.createElement('div');
+      item.className = 'vitem';
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'vthumb';
+      btn.setAttribute('aria-label', v.title + ' 재생');
+      var img = document.createElement('img');
+      img.src = 'https://i.ytimg.com/vi/' + v.id + '/mqdefault.jpg';
+      img.alt = '';
+      img.loading = 'lazy';
+      var icon = document.createElement('span');
+      icon.className = 'vplay';
+      icon.setAttribute('aria-hidden', 'true');
+      btn.appendChild(img);
+      btn.appendChild(icon);
+      btn.addEventListener('click', function () { play(item, v); });
+      var t = document.createElement('p');
+      t.className = 'vtitle';
+      t.textContent = v.title;
+      var d = document.createElement('p');
+      d.className = 'vdate';
+      d.textContent = fmt(v.published) + (v.short ? ' · 숏폼' : '');
+      item.appendChild(btn);
+      item.appendChild(t);
+      item.appendChild(d);
+      box.appendChild(item);
+    });
+  }
+
+  function load(i) {
+    if (i >= SOURCES.length) { fallback(); return; }
+    fetch(SOURCES[i], { cache: 'no-cache' })
+      .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (j) { if (!j.videos || !j.videos.length) throw 0; render(j.videos); })
+      .catch(function () { load(i + 1); });
+  }
+  load(0);
+})();
+</script>
 </body>
 </html>
