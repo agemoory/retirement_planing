@@ -147,7 +147,6 @@
 <div class="wrap">
 <div class="legal">
 <span>별재무설계 · 대표 조성 · 사업자등록번호 142-09-64413</span>
-<span>josung@kakao.com</span>
 <span><a href="/privacy/">개인정보처리방침</a> · 신청 내용 전송은 메일 발송 서비스에 위탁합니다.</span>
 </div>
 </div>
@@ -157,7 +156,6 @@
 (function () {
   // Web3Forms access key: 발급받은 키를 여기에 넣으면 메일로 바로 전송됩니다.
   var ACCESS_KEY = '9ae36a1b-7fcb-49e4-b308-b7d790eddc8b';
-  var MAIL_TO = 'josung@kakao.com';
 
   var form = document.getElementById('apply-form');
   var tabC = document.getElementById('tab-consult');
@@ -231,7 +229,6 @@
     };
     var subject = '[josung.kr ' + kind + '] ' + val('name') + (lec ? ' · ' + val('org') : '');
 
-    if (!ACCESS_KEY) { mailFallback(subject, data); return; }
 
     var btn = document.getElementById('submit-btn');
     btn.disabled = true; btn.textContent = '보내는 중…';
@@ -244,16 +241,11 @@
       if (res && res.success) { showDone(); }
       else { throw new Error('fail'); }
     }).catch(function () {
-      err('e-send', '전송이 잘 안 됐어요. 잠시 후 다시 시도하거나 ' + MAIL_TO + '로 보내주세요.');
+      err('e-send', '전송이 잘 안 됐어요. 잠시 후 다시 시도하거나 위의 카톡 버튼으로 바로 말 걸어주세요.');
     }).then(function () {
       btn.disabled = false; btn.textContent = TEXT[mode].submit;
     });
   });
-
-  function mailFallback(subject, data) {
-    var body = Object.keys(data).map(function (k) { return k + ': ' + data[k]; }).join('\n');
-    location.href = 'mailto:' + MAIL_TO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-  }
 
   function showDone() {
     document.getElementById('done-text').textContent = TEXT[mode].done;
