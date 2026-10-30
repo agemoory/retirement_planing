@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>상담·강의 신청 · josung.kr</title>
+<title>상담 신청 · 섭외 문의 · josung.kr</title>
 <meta name="description" content="보험 얘기 아니어도 괜찮습니다. 돈 얘기, 일 얘기, 사는 얘기 다 환영해요.">
-<meta property="og:title" content="상담·강의 신청 · josung.kr">
+<meta property="og:title" content="상담 신청 · 섭외 문의 · josung.kr">
 <meta property="og:description" content="보험 얘기 아니어도 괜찮습니다. 돈 얘기, 일 얘기, 사는 얘기 다 환영해요.">
 <meta property="og:url" content="https://josung.kr/apply/">
 <meta property="og:type" content="website">
@@ -45,7 +45,7 @@
 <div id="form-area">
 <div class="tabs" role="tablist" aria-label="신청 종류">
 <button type="button" role="tab" id="tab-consult" aria-selected="true" aria-controls="apply-form">상담신청</button>
-<button type="button" role="tab" id="tab-lecture" aria-selected="false" aria-controls="apply-form">강의신청</button>
+<button type="button" role="tab" id="tab-lecture" aria-selected="false" aria-controls="apply-form">섭외 문의</button>
 </div>
 
 <form id="apply-form" novalidate>
@@ -166,8 +166,8 @@
     lecture: {
       name: '담당자 이름', msg: '강의 내용 · 요청 사항',
       hint: '대상, 주제, 원하시는 방향을 편하게 적어주세요.',
-      consent: '강의 협의를 위해 담당자 이름·연락처·이메일을 수집합니다. 협의 종료 후 1년 내 파기하며, 동의하지 않으시면 신청이 어렵습니다.',
-      submit: '강의 신청 보내기', done: '강의 내용 확인하고 담당자님께 직접 연락드릴게요.'
+      consent: '섭외 협의를 위해 담당자 이름·연락처·이메일을 수집합니다. 협의 종료 후 1년 내 파기하며, 동의하지 않으시면 문의가 어렵습니다.',
+      submit: '섭외 문의 보내기', done: '내용 확인하고 담당자님께 직접 연락드릴게요.'
     }
   };
 
@@ -213,7 +213,7 @@
     if (first) { document.getElementById(first).focus(); return; }
     if (form.elements.botcheck.checked) return;
 
-    var kind = lec ? '강의신청' : '상담신청';
+    var kind = lec ? '섭외문의' : '상담신청';
     var data = lec ? {
       '종류': kind, '기관·회사명': val('org'), '담당자': val('name'), '연락처': val('phone'),
       '이메일': val('email'), '희망 일정·인원': val('schedule'), '강의 분야': val('field'), '요청 사항': val('message')
