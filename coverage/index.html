@@ -298,11 +298,14 @@
     { cat: 5, id: 'vLaw', name: '변호사선임비용', short: '변호사비', std: 3000, max: true, drv: true },
     { cat: 5, id: 'vInj', name: '자동차부상치료비(14급)', short: '자부치', std: 30, drv: true },
 
-    { cat: 6, id: 'sDmax', name: '질병수술(최대)', short: '질병수술최대', std: 500 },
-    { cat: 6, id: 'sDmin', name: '질병수술(최저)', short: '질병수술최저', std: 30 },
-    { cat: 6, id: 'sAmax', name: '상해수술(최대)', short: '상해수술최대', std: 500 },
-    { cat: 6, id: 'sAmin', name: '상해수술(최저)', short: '상해수술최저', std: 30 },
-    { cat: 6, id: 'sN', name: 'N대수술비(비관혈)', short: 'N대수술', std: 100 },
+    { cat: 6, id: 'sD', name: '질병수술비', short: '질병수술', std: 30 },
+    { cat: 6, id: 'sA', name: '상해수술비', short: '상해수술', std: 30 },
+    { cat: 6, id: 'sDmax', name: '질병 종수술비(최대)', short: '질병종최대', std: 500 },
+    { cat: 6, id: 'sDmin', name: '질병 종수술비(최소)', short: '질병종최소', std: 30 },
+    { cat: 6, id: 'sAmax', name: '상해 종수술비(최대)', short: '상해종최대', std: 500 },
+    { cat: 6, id: 'sAmin', name: '상해 종수술비(최소)', short: '상해종최소', std: 30 },
+    { cat: 6, id: 'sNmax', name: 'N대수술비(최대)', short: 'N대최대', std: 1000 },
+    { cat: 6, id: 'sNmin', name: 'N대수술비(최소)', short: 'N대최소', std: 100 },
 
     { cat: 7, id: 'oFx', name: '골절진단비', short: '골절', std: 20 },
     { cat: 7, id: 'oCast', name: '깁스치료비', short: '깁스', std: 10 },
@@ -521,7 +524,7 @@
     S.info = { client: '홍길동', income: '연 4,000만원', period: '20년납/비갱신', life: '100세', planner: '', contact: '', driver: true };
     S.ex = [
       { name: 'A생명 종신', keep: true, prem: 74360,
-        amt: amtOf({ dDeath: 3000, aDeath: 6000, cGen: 2000, cSim: 400, bHem: 1000, hAmi: 1000, nDay: 2, sDmin: 30, sAmin: 30, sDmax: 300 }) },
+        amt: amtOf({ dDeath: 3000, aDeath: 6000, cGen: 2000, cSim: 400, bHem: 1000, hAmi: 1000, nDay: 2, sD: 30, sA: 30, sDmax: 300, sDmin: 10 }) },
       { name: 'B화재 운전자', keep: false, prem: 12000,
         amt: amtOf({ vLia: 10000, vSet: 7000, vFine: 2000, vLaw: 500, vInj: 20 }) },
       { name: 'D손보 실손', keep: true, prem: 18500,
@@ -530,7 +533,7 @@
     S.nw = { name: 'C화재 통합', prem: 89000,
       amt: amtOf({ dDis: 3000, aDis: 5000, cHigh: 3000, cGen: 1000, cSim: 200, bStr: 1000, bCvd: 1000, bAll: 1000,
         hIhd: 1000, hAll: 1000, tCi: 1000, tCn: 1000, tCt: 2000, tB: 1000, tH: 1000, nDay: 1, nIc: 10, nCg: 10, nCgL: 5,
-        vLia: 10000, vSet: 20000, vFine: 2000, vLaw: 3000, vInj: 30, sDmax: 500, sAmax: 500, sN: 100,
+        vLia: 10000, vSet: 20000, vFine: 2000, vLaw: 3000, vInj: 30, sDmax: 500, sDmin: 30, sAmax: 500, sAmin: 30, sNmax: 1000, sNmin: 100,
         oFx: 20, oCast: 10, oBurn: 20 }) };
     syncInfo(); buildGrid();
   });
