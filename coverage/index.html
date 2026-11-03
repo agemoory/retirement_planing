@@ -188,7 +188,7 @@
 </div>
 </div>
 <div class="grid-scroll"><table class="gt" id="gt"></table></div>
-<p class="unit-note">단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 비운전형이면 형사합의금·벌금·변호사선임비용·자부치는 ‘해당없음’ 처리돼요.<br>
+<p class="unit-note">단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
 <b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
 </section>
 
@@ -298,14 +298,14 @@
     { cat: 5, id: 'vLaw', name: '변호사선임비용', short: '변호사비', std: 3000, max: true, drv: true },
     { cat: 5, id: 'vInj', name: '자동차부상치료비(14급)', short: '자부치', std: 30, drv: true },
 
-    { cat: 6, id: 'sD', name: '질병수술비', short: '질병수술', std: 30 },
-    { cat: 6, id: 'sA', name: '상해수술비', short: '상해수술', std: 30 },
-    { cat: 6, id: 'sDmax', name: '질병 종수술비(최대)', short: '질병종최대', std: 500 },
-    { cat: 6, id: 'sDmin', name: '질병 종수술비(최소)', short: '질병종최소', std: 30 },
-    { cat: 6, id: 'sAmax', name: '상해 종수술비(최대)', short: '상해종최대', std: 500 },
-    { cat: 6, id: 'sAmin', name: '상해 종수술비(최소)', short: '상해종최소', std: 30 },
-    { cat: 6, id: 'sNmax', name: 'N대수술비(최대)', short: 'N대최대', std: 1000 },
-    { cat: 6, id: 'sNmin', name: 'N대수술비(최소)', short: 'N대최소', std: 100 },
+    { cat: 6, id: 'sD', name: '질병수술비', short: '질병수술', std: 20 },
+    { cat: 6, id: 'sA', name: '상해수술비', short: '상해수술', std: 20 },
+    { cat: 6, id: 'sDmax', name: '질병 종수술비(최대)', short: '질병종최대', std: 200 },
+    { cat: 6, id: 'sDmin', name: '질병 종수술비(최소)', short: '질병종최소', std: 20 },
+    { cat: 6, id: 'sAmax', name: '상해 종수술비(최대)', short: '상해종최대', std: 200 },
+    { cat: 6, id: 'sAmin', name: '상해 종수술비(최소)', short: '상해종최소', std: 20 },
+    { cat: 6, id: 'sNmax', name: 'N대수술비(최대)', short: 'N대최대', std: 100 },
+    { cat: 6, id: 'sNmin', name: 'N대수술비(최소)', short: 'N대최소', std: 10 },
 
     { cat: 7, id: 'oFx', name: '골절진단비', short: '골절', std: 20 },
     { cat: 7, id: 'oCast', name: '깁스치료비', short: '깁스', std: 10 },
@@ -392,7 +392,7 @@
       var noteTitle = it.desc ? it.desc : it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
         : '실손형(비례보상) 담보라 여러 계약이 있어도 더하지 않고 가장 큰 한도만 인정해요.';
       h += '<tr><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
-      h += '<td class="std"><input type="text" inputmode="decimal" data-k="std" data-r="' + r + '" aria-label="' + it.name + ' 표준"></td>';
+      h += '<td class="std"><input type="text" inputmode="decimal" data-k="std" data-r="' + r + '" placeholder="0 = 제외" aria-label="' + it.name + ' 표준"></td>';
       S.ex.forEach(function (e, c) {
         h += '<td class="' + (e.keep ? '' : 'off') + '" data-col="' + c + '"><input type="text" inputmode="decimal" data-k="ex" data-c="' + c + '" data-r="' + r + '" aria-label="' + it.name + ' ' + esc(e.name) + '"></td>';
       });
@@ -550,37 +550,43 @@
     g.moveTo(-2, 10); g.lineTo(10, -2); g.moveTo(-2, 2); g.lineTo(2, -2); g.moveTo(6, 10); g.lineTo(10, 6); g.stroke();
     hatchCache = p; return ctx.createPattern(p, 'repeat');
   }
-  function geom(size) {
-    // 좁은 화면(휴대폰)에서는 45개 라벨이 겹치므로 라벨을 빼고 차트를 키움 — 칸을 누르면 툴팁으로 확인
+  function geom(size, m) {
+    // 좁은 화면(휴대폰)에서는 라벨이 겹치므로 라벨을 빼고 차트를 키움 — 칸을 누르면 툴팁으로 확인
     var labels = size >= 400;
     var fs = size < 520 ? 11 : 12.5;
     var room = labels ? fs * 6.4 : 0;
     var R = size / 2 - room - (labels ? 18 : 14);
-    return { cx: size / 2, cy: size / 2, R: R, fs: fs, labels: labels, ring1: R + 4, ring2: R + 10, labR: R + 16, step: Math.PI * 2 / N };
+    return { cx: size / 2, cy: size / 2, R: R, fs: fs, labels: labels, ring1: R + 4, ring2: R + 10, labR: R + 16, step: Math.PI * 2 / Math.max(1, m) };
   }
+  // 차트에 들어가는 담보: 표준금액이 0(또는 비운전형의 운전자 담보)이면 제외
+  function visible(ser) { return ser.filter(function (d) { return d.std > 0; }); }
   // 각도: 12시 방향에서 시계방향
   function ang(i, g) { return -Math.PI / 2 + i * g.step; }
-  function drawPolar(ctx, x0, y0, size, ser) {
-    var g = geom(size), cx = x0 + g.cx, cy = y0 + g.cy, R = g.R;
+  function drawPolar(ctx, x0, y0, size, serAll) {
+    var ser = visible(serAll), M = ser.length;
+    var g = geom(size, M), cx = x0 + g.cx, cy = y0 + g.cy, R = g.R;
     ctx.save();
     ctx.fillStyle = SURF; ctx.fillRect(x0, y0, size, size);
     // 표준(100%) 바탕
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = BASE; ctx.fill();
+    if (!M) {
+      ctx.fillStyle = INK2; ctx.font = '400 14px ' + FONT; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('표준금액을 넣은 담보가 없어요', cx, cy);
+      ctx.restore(); return;
+    }
     // 데이터 칸
     ser.forEach(function (d, i) {
-      var a0 = ang(i, g), a1 = a0 + g.step, rr, fill;
-      if (d.std <= 0) { rr = R; fill = hatch(ctx); }
-      else { rr = Math.max(0, Math.min(1, d.ratio)) * R; fill = CATS[d.cat].color; }
+      var a0 = ang(i, g), a1 = a0 + g.step, rr = Math.max(0, Math.min(1, d.ratio)) * R;
       if (rr <= 0) return;
       ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rr, a0, a1); ctx.closePath();
-      ctx.fillStyle = fill; ctx.fill();
+      ctx.fillStyle = CATS[d.cat].color; ctx.fill();
     });
     // 보조 원 (25/50/75%)
     ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,255,255,.75)';
     [0.25, 0.5, 0.75].forEach(function (k) { ctx.beginPath(); ctx.arc(cx, cy, R * k, 0, Math.PI * 2); ctx.stroke(); });
     // 칸 구분선 (카테고리 경계는 굵게)
-    ser.forEach(function (d, i) {
-      var a = ang(i, g), catEdge = i === 0 || ITEMS[i - 1].cat !== ITEMS[i].cat;
+    if (M > 1) ser.forEach(function (d, i) {
+      var a = ang(i, g), catEdge = i === 0 || ser[i - 1].cat !== d.cat;
       ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * R, cy + Math.sin(a) * R);
       ctx.strokeStyle = SURF; ctx.lineWidth = catEdge ? 3 : 1.5; ctx.stroke();
     });
@@ -588,11 +594,11 @@
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.strokeStyle = GRID2; ctx.lineWidth = 1.5; ctx.stroke();
     // 카테고리 링
     var start = 0;
-    for (var i = 1; i <= N; i++) {
-      if (i === N || ITEMS[i].cat !== ITEMS[start].cat) {
+    for (var i = 1; i <= M; i++) {
+      if (i === M || ser[i].cat !== ser[start].cat) {
         var a0 = ang(start, g) + 0.012, a1 = ang(i, g) - 0.012;
         ctx.beginPath(); ctx.arc(cx, cy, (g.ring1 + g.ring2) / 2, a0, a1);
-        ctx.strokeStyle = CATS[ITEMS[start].cat].color; ctx.lineWidth = g.ring2 - g.ring1; ctx.lineCap = 'butt'; ctx.stroke();
+        ctx.strokeStyle = CATS[ser[start].cat].color; ctx.lineWidth = g.ring2 - g.ring1; ctx.lineCap = 'butt'; ctx.stroke();
         start = i;
       }
     }
@@ -606,8 +612,8 @@
       ctx.save(); ctx.translate(x, y);
       ctx.rotate(left ? a + Math.PI : a);
       ctx.textAlign = left ? 'right' : 'left';
-      ctx.fillStyle = d.std > 0 && d.val < d.std ? INK : INK2;
-      ctx.fillText(ITEMS[i].short, 0, 0);
+      ctx.fillStyle = d.val < d.std ? INK : INK2;
+      ctx.fillText(ITEMS[d.r].short, 0, 0);
       ctx.restore();
     });
     ctx.restore();
@@ -645,20 +651,22 @@
   // 범례
   document.getElementById('legend').innerHTML = CATS.map(function (c) {
     return '<li><i class="dot" style="background:' + c.color + '"></i>' + c.name + '</li>';
-  }).join('') + '<li><i class="sw-std"></i>바깥 원 = 표준 100%</li><li><i class="sw-na"></i>해당없음</li>';
+  }).join('') + '<li><i class="sw-std"></i>바깥 원 = 표준 100%</li>';
 
   // 툴팁
   function attachTip(cv, getSer) {
     var tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true;
     cv.parentElement.appendChild(tip);
     function show(ev) {
-      var rect = cv.getBoundingClientRect(), size = rect.width, g = geom(size);
+      var vis = visible(getSer());
+      var rect = cv.getBoundingClientRect(), size = rect.width, g = geom(size, vis.length);
       var x = ev.clientX - rect.left - g.cx, y = ev.clientY - rect.top - g.cy;
       var dist = Math.sqrt(x * x + y * y);
       if (dist > g.labR + g.fs * 6) { tip.hidden = true; return; }
       var a = Math.atan2(y, x) + Math.PI / 2; if (a < 0) a += Math.PI * 2;
-      var i = Math.floor(a / g.step) % N, d = getSer()[i]; if (!d) return;
-      var it = ITEMS[i];
+      if (!vis.length) { tip.hidden = true; return; }
+      var d = vis[Math.floor(a / g.step) % vis.length]; if (!d) return;
+      var it = ITEMS[d.r];
       tip.innerHTML = '<b>' + CATS[it.cat].name + ' · ' + it.name + '</b>' + (it.desc ? '<br>' + it.desc : '') + '<br>' +
         (d.std > 0 ? '표준 ' + fmt(d.std) + ' · 보장 ' + fmt(d.val) + ' (' + Math.round(d.ratio * 100) + '%)' : '해당없음') +
         (d.std > 0 && it.incIdx.length ? '<br><span style="opacity:.75">상위 담보 금액 포함</span>' : '') +
@@ -689,7 +697,8 @@
     var rows = 0;
     serNow.forEach(function (d, i) {
       var p = serProp[i];
-      if (onlyShort.checked && !(d.std > 0 && (d.val < d.std || p.val < p.std))) return;
+      if (!(d.std > 0)) return;
+      if (onlyShort.checked && !(d.val < d.std || p.val < p.std)) return;
       rows++;
       var it = ITEMS[i];
       h += '<tr><td><span class="cat-cell"><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + it.name + (it.desc ? ' <span class="pct">' + it.desc + '</span>' : '') + '</span></td>' +
@@ -710,7 +719,8 @@
   function buildReport() {
     var W = 1200, P = 56, SC = 2;
     var chartS = 520, gap = W - P * 2 - chartS * 2;
-    var rowH = 28, half = Math.ceil(N / 2);
+    var rowsIdx = []; serNow.forEach(function (d, i) { if (d.std > 0) rowsIdx.push(i); });
+    var rowH = 28, half = Math.max(1, Math.ceil(rowsIdx.length / 2));
     var H = 56 + 112 + 24 + 44 + chartS + 56 + 96 + 40 + 40 + rowH * half + 80;
     var cv = document.createElement('canvas'); cv.width = W * SC; cv.height = H * SC;
     var ctx = cv.getContext('2d'); ctx.scale(SC, SC);
@@ -756,7 +766,7 @@
     // 범례
     ctx.font = '400 14px ' + FONT; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
     var items = CATS.map(function (c) { return { t: c.name, c: c.color }; });
-    items.push({ t: '바깥 원 = 표준 100%', std: true }); items.push({ t: '해당없음', na: true });
+    items.push({ t: '바깥 원 = 표준 100%', std: true });
     var lw = items.reduce(function (s, it) { return s + 20 + ctx.measureText(it.t).width + 22; }, -22);
     var lx = (W - lw) / 2, ly = y + 8;
     items.forEach(function (it) {
@@ -797,7 +807,7 @@
         ctx.fillText(t, k === 0 ? bx + 12 : bx + colW * (k === 3 ? 1 : cx4[k + 1]) - 12, by + rowH / 2);
       });
       for (var j = 0; j < half; j++) {
-        var i = side * half + j; if (i >= N) break;
+        var k2 = side * half + j; if (k2 >= rowsIdx.length) break; var i = rowsIdx[k2];
         var ry2 = by + rowH * (j + 1), d = serNow[i], p = serProp[i], it = ITEMS[i];
         var cellsX = [bx + colW * cx4[1], bx + colW * cx4[2], bx + colW * cx4[3], bx + colW];
         [[d, 1], [p, 2]].forEach(function (q) {
