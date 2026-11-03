@@ -45,7 +45,7 @@
 .gt{border-collapse:separate;border-spacing:0;width:100%;font-size:14px;min-width:640px}
 .gt th,.gt td{padding:4px 6px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap;background:var(--surface)}
 .gt thead th{position:sticky;top:0;background:var(--surface2);font-weight:500;color:var(--text2);vertical-align:bottom;padding:8px 6px;z-index:2}
-.gt .lab{position:sticky;left:0;z-index:1;text-align:left;font-weight:500;color:var(--text);padding-left:14px;min-width:132px;border-right:1px solid var(--border)}
+.gt .lab{position:sticky;left:0;z-index:1;text-align:left;font-weight:500;color:var(--text);padding-left:14px;min-width:156px;max-width:200px;white-space:normal;line-height:1.35;border-right:1px solid var(--border)}
 .gt thead .lab{z-index:3}
 .gt tr.cat th{background:var(--bg);text-align:left;padding:8px 14px 6px;font-size:13px;font-weight:700;color:var(--text)}
 .gt tr.cat th span{position:sticky;left:14px;display:inline-flex;align-items:center;gap:8px}
@@ -248,7 +248,7 @@
     { name: '실손',        color: '#1baf7a' },
     { name: '진단비',      color: '#eb6834' },
     { name: '치료비',      color: '#6250d6' },
-    { name: '간병·요양',   color: '#e34948' },
+    { name: '입원·간병',   color: '#e34948' },
     { name: '운전자·배상', color: '#eda100' },
     { name: '수술',        color: '#008300' },
     { name: '기타',        color: '#e87ba4' }
@@ -265,15 +265,14 @@
     { cat: 0, id: 'aDis', name: '상해후유장해(3%↑)', short: '상해장해', std: 5000 },
 
     { cat: 1, id: 'mDi', name: '질병입원', short: '질병입원', std: 5000, max: true },
-    { cat: 1, id: 'mDo', name: '질병통원(회당)', short: '질병통원', std: 20, max: true },
+    { cat: 1, id: 'mDo', name: '질병통원(회당)', short: '질병통원', std: 30, max: true },
     { cat: 1, id: 'mAi', name: '상해입원', short: '상해입원', std: 5000, max: true },
-    { cat: 1, id: 'mAo', name: '상해통원(회당)', short: '상해통원', std: 20, max: true },
+    { cat: 1, id: 'mAo', name: '상해통원(회당)', short: '상해통원', std: 30, max: true },
     { cat: 1, id: 'm3', name: '3대비급여(연간)', short: '3대비급여', std: 350, max: true },
 
     { cat: 2, id: 'cHigh', name: '고액암', short: '고액암', std: 5000, inc: ['cGen'] },
     { cat: 2, id: 'cGen', name: '일반암', short: '일반암', std: 3000 },
     { cat: 2, id: 'cSim', name: '유사암', short: '유사암', std: 600 },
-    { cat: 2, id: 'cRe', name: '재진단암(계속받는암)', short: '재진단암', std: 2000 },
     { cat: 2, id: 'bHem', name: '뇌출혈', short: '뇌출혈', std: 3000, inc: ['bStr', 'bCvd', 'bAll'] },
     { cat: 2, id: 'bStr', name: '뇌졸중', short: '뇌졸중', std: 3000, inc: ['bCvd', 'bAll'] },
     { cat: 2, id: 'bCvd', name: '뇌혈관질환', short: '뇌혈관', std: 2000, inc: ['bAll'] },
@@ -284,19 +283,16 @@
 
     { cat: 3, id: 'tCi', name: '급여암치료(연간)', short: '급여암치료', std: 1000 },
     { cat: 3, id: 'tCn', name: '비급여암치료(연간)', short: '비급여암치료', std: 1000 },
-    { cat: 3, id: 'tCt', name: '표적·면역·중입자', short: '표적면역', std: 2000 },
+    { cat: 3, id: 'tCt', name: '암특정치료(연간)', desc: '표적·면역·양성자·다빈치', short: '암특정치료', std: 2000 },
     { cat: 3, id: 'tB', name: '뇌혈관치료(연간)', short: '뇌혈관치료', std: 1000 },
     { cat: 3, id: 'tH', name: '심혈관치료(연간)', short: '심혈관치료', std: 1000 },
 
     { cat: 4, id: 'nDay', name: '일반병실 입원(일당)', short: '입원일당', std: 3 },
     { cat: 4, id: 'nIc', name: '간호통합병실(일당)', short: '간호통합', std: 5 },
-    { cat: 4, id: 'nCg', name: '일반병실 간병인(일당)', short: '일반간병', std: 10 },
+    { cat: 4, id: 'nCg', name: '일반병실 간병인(일당)', short: '일반간병', std: 15 },
     { cat: 4, id: 'nCgL', name: '요양병원 간병인(일당)', short: '요양간병', std: 5 },
-    { cat: 4, id: 'nDem', name: '치매(중등도↑)', short: '치매', std: 2000 },
-    { cat: 4, id: 'nLtc', name: '장기요양(1~2등급)', short: '장기요양', std: 2000 },
 
     { cat: 5, id: 'vLia', name: '일상생활배상책임', short: '일배책', std: 10000, max: true },
-    { cat: 5, id: 'vFire', name: '화재벌금', short: '화재벌금', std: 2000, max: true },
     { cat: 5, id: 'vSet', name: '자동차사고 형사합의금', short: '형사합의', std: 20000, max: true, drv: true },
     { cat: 5, id: 'vFine', name: '벌금(대인)', short: '벌금', std: 2000, max: true, drv: true },
     { cat: 5, id: 'vLaw', name: '변호사선임비용', short: '변호사비', std: 3000, max: true, drv: true },
@@ -328,8 +324,8 @@
     return {
       info: { client: '', income: '', period: '', life: '', planner: '', contact: '', driver: true },
       std: defaultStd(),
-      ex: [{ name: '기존 1', keep: true, amt: zeros(), term: '', prem: 0 }],
-      nw: { name: '신규 제안', amt: zeros(), term: '', prem: 0 }
+      ex: [{ name: '기존 1', keep: true, amt: zeros(), prem: 0 }],
+      nw: { name: '신규 제안', amt: zeros(), prem: 0 }
     };
   }
   var S = blankState();
@@ -389,8 +385,8 @@
         lastCat = it.cat;
         h += '<tr class="cat"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + '</span></th></tr>';
       }
-      var note = it.incIdx.length ? '상위 담보 합산' : (it.max ? '중복 시 최대값' : '');
-      var noteTitle = it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
+      var note = it.desc || (it.incIdx.length ? '상위 담보 합산' : (it.max ? '중복 시 최대값' : ''));
+      var noteTitle = it.desc ? it.desc : it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
         : '실손형(비례보상) 담보라 여러 계약이 있어도 더하지 않고 가장 큰 한도만 인정해요.';
       h += '<tr><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
       h += '<td class="std"><input type="text" inputmode="decimal" data-k="std" data-r="' + r + '" aria-label="' + it.name + ' 표준"></td>';
@@ -402,9 +398,6 @@
       h += '<td class="sum num" id="ps-' + r + '"></td></tr>';
     });
     h += '</tbody><tbody class="foot">';
-    h += '<tr><th class="lab" scope="row">납기 / 갱신</th><td class="std"><input type="text" class="txt" disabled id="std-term"></td>';
-    S.ex.forEach(function (e, c) { h += '<td class="' + (e.keep ? '' : 'off') + '"><input type="text" class="txt" data-k="exterm" data-c="' + c + '" placeholder="20년납/비갱신" aria-label="' + esc(e.name) + ' 납기"></td>'; });
-    h += '<td></td><td class="new"><input type="text" class="txt" data-k="nwterm" placeholder="20년납/비갱신" aria-label="신규 제안 납기"></td><td></td></tr>';
     h += '<tr><th class="lab" scope="row">월 보험료 (원)</th><td></td>';
     S.ex.forEach(function (e, c) { h += '<td class="' + (e.keep ? '' : 'off') + '"><input type="text" inputmode="numeric" data-k="exprem" data-c="' + c + '" aria-label="' + esc(e.name) + ' 월 보험료"></td>'; });
     h += '<td class="sum num" id="xs-prem"></td><td class="new"><input type="text" inputmode="numeric" data-k="nwprem" aria-label="신규 제안 월 보험료"></td><td class="sum num" id="ps-prem"></td></tr>';
@@ -424,8 +417,6 @@
       }
       else if (k === 'ex') inp.value = fmtIn(S.ex[c].amt[r]);
       else if (k === 'nw') inp.value = fmtIn(S.nw.amt[r]);
-      else if (k === 'exterm') inp.value = S.ex[c].term;
-      else if (k === 'nwterm') inp.value = S.nw.term;
       else if (k === 'exprem') inp.value = fmtIn(S.ex[c].prem);
       else if (k === 'nwprem') inp.value = fmtIn(S.nw.prem);
     });
@@ -444,8 +435,6 @@
     }
     document.getElementById('xs-prem').textContent = fmt(premNow());
     document.getElementById('ps-prem').textContent = fmt(premProp());
-    var st = document.getElementById('std-term');
-    if (st) st.value = S.info.period || '';
     scheduleDraw();
   }
 
@@ -457,8 +446,6 @@
     else if (k === 'nw') S.nw.amt[r] = parse(inp.value);
     else if (k === 'exname') { S.ex[c].name = inp.value; scheduleDraw(); return; }
     else if (k === 'nwname') { S.nw.name = inp.value; return; }
-    else if (k === 'exterm') { S.ex[c].term = inp.value; return; }
-    else if (k === 'nwterm') { S.nw.term = inp.value; return; }
     else if (k === 'exprem') S.ex[c].prem = parse(inp.value);
     else if (k === 'nwprem') S.nw.prem = parse(inp.value);
     updateComputed();
@@ -505,7 +492,7 @@
 
   document.getElementById('btn-add').addEventListener('click', function () {
     if (S.ex.length >= MAX_EX) return;
-    S.ex.push({ name: '기존 ' + (S.ex.length + 1), keep: true, amt: zeros(), term: '', prem: 0 });
+    S.ex.push({ name: '기존 ' + (S.ex.length + 1), keep: true, amt: zeros(), prem: 0 });
     buildGrid();
     var ins = gt.querySelectorAll('input[data-k="exname"]');
     ins[ins.length - 1].focus();
@@ -514,7 +501,7 @@
 
   /* ---------- 고객 정보 ---------- */
   document.querySelectorAll('[data-info]').forEach(function (inp) {
-    inp.addEventListener('input', function () { S.info[inp.dataset.info] = inp.value; if (inp.dataset.info === 'period') updateComputed(); else scheduleDraw(); });
+    inp.addEventListener('input', function () { S.info[inp.dataset.info] = inp.value; scheduleDraw(); });
   });
   var segBtns = document.querySelectorAll('[data-driver]');
   segBtns.forEach(function (b) {
@@ -533,17 +520,17 @@
     S = blankState();
     S.info = { client: '홍길동', income: '연 4,000만원', period: '20년납/비갱신', life: '100세', planner: '', contact: '', driver: true };
     S.ex = [
-      { name: 'A생명 종신', keep: true, term: '20년납/일부갱신', prem: 74360,
+      { name: 'A생명 종신', keep: true, prem: 74360,
         amt: amtOf({ dDeath: 3000, aDeath: 6000, cGen: 2000, cSim: 400, bHem: 1000, hAmi: 1000, nDay: 2, sDmin: 30, sAmin: 30, sDmax: 300 }) },
-      { name: 'B화재 운전자', keep: false, term: '갱신형', prem: 12000,
+      { name: 'B화재 운전자', keep: false, prem: 12000,
         amt: amtOf({ vLia: 10000, vSet: 7000, vFine: 2000, vLaw: 500, vInj: 20 }) },
-      { name: 'D손보 실손', keep: true, term: '갱신형(3세대)', prem: 18500,
+      { name: 'D손보 실손', keep: true, prem: 18500,
         amt: amtOf({ mDi: 5000, mDo: 25, mAi: 5000, mAo: 25, m3: 350 }) }
     ];
-    S.nw = { name: 'C화재 통합', term: '20년납/비갱신', prem: 89000,
-      amt: amtOf({ dDis: 3000, aDis: 5000, cHigh: 3000, cGen: 1000, cSim: 200, cRe: 2000, bStr: 1000, bCvd: 1000, bAll: 1000,
+    S.nw = { name: 'C화재 통합', prem: 89000,
+      amt: amtOf({ dDis: 3000, aDis: 5000, cHigh: 3000, cGen: 1000, cSim: 200, bStr: 1000, bCvd: 1000, bAll: 1000,
         hIhd: 1000, hAll: 1000, tCi: 1000, tCn: 1000, tCt: 2000, tB: 1000, tH: 1000, nDay: 1, nIc: 10, nCg: 10, nCgL: 5,
-        nDem: 2000, nLtc: 2000, vLia: 10000, vSet: 20000, vFine: 2000, vLaw: 3000, vInj: 30, sDmax: 500, sAmax: 500, sN: 100,
+        vLia: 10000, vSet: 20000, vFine: 2000, vLaw: 3000, vInj: 30, sDmax: 500, sAmax: 500, sN: 100,
         oFx: 20, oCast: 10, oBurn: 20 }) };
     syncInfo(); buildGrid();
   });
@@ -669,7 +656,7 @@
       var a = Math.atan2(y, x) + Math.PI / 2; if (a < 0) a += Math.PI * 2;
       var i = Math.floor(a / g.step) % N, d = getSer()[i]; if (!d) return;
       var it = ITEMS[i];
-      tip.innerHTML = '<b>' + CATS[it.cat].name + ' · ' + it.name + '</b><br>' +
+      tip.innerHTML = '<b>' + CATS[it.cat].name + ' · ' + it.name + '</b>' + (it.desc ? '<br>' + it.desc : '') + '<br>' +
         (d.std > 0 ? '표준 ' + fmt(d.std) + ' · 보장 ' + fmt(d.val) + ' (' + Math.round(d.ratio * 100) + '%)' : '해당없음') +
         (d.std > 0 && it.incIdx.length ? '<br><span style="opacity:.75">상위 담보 금액 포함</span>' : '') +
         (d.std > 0 && it.max ? '<br><span style="opacity:.75">실손형 · 가장 큰 한도만 인정</span>' : '');
@@ -702,7 +689,7 @@
       if (onlyShort.checked && !(d.std > 0 && (d.val < d.std || p.val < p.std))) return;
       rows++;
       var it = ITEMS[i];
-      h += '<tr><td><span class="cat-cell"><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + it.name + '</span></td>' +
+      h += '<tr><td><span class="cat-cell"><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + it.name + (it.desc ? ' <span class="pct">' + it.desc + '</span>' : '') + '</span></td>' +
         '<td>' + (d.std > 0 ? fmt(d.std) : '해당없음') + '</td>' + pctCell(d.val, d.std) + pctCell(p.val, p.std) + '</tr>';
     });
     if (!rows) h += '<tr><td colspan="4" class="empty-note">모든 담보가 표준을 채웠어요.</td></tr>';
