@@ -35,6 +35,8 @@
 .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px 16px}
 .info-grid .field label{font-size:14px;color:var(--text2);font-weight:500}
 .info-grid input[type=text]{min-height:44px}
+.sel-sm{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--border2);border-radius:10px;background:#fff;color:var(--text);font:16px var(--sans)}
+.silson-line{margin:14px 0 0;padding:12px 16px;border-radius:10px;background:var(--bg);border:1px solid var(--border);font-size:15px;color:var(--text-body)}
 .seg{display:inline-grid;grid-auto-flow:column;gap:4px;padding:4px;background:var(--surface2);border-radius:10px}
 .seg button{min-height:36px;padding:0 14px;border:0;border-radius:7px;background:transparent;color:var(--text2);font:500 15px var(--sans);cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);font-weight:700;box-shadow:0 1px 2px rgba(26,23,20,.12)}
@@ -133,6 +135,7 @@
 <nav class="nav" aria-label="주 메뉴">
 <a href="/host/">Host</a>
 <a href="/#tools">계산기</a>
+<a href="/silson/">실손</a>
 <a href="/coverage/" aria-current="page">보장분석</a>
 <a href="/#suremate">슈어메이트</a>
 <a href="/#contents">콘텐츠</a>
@@ -172,6 +175,7 @@
 <div class="field"><label for="i-life">기대수명 + 10년</label><input type="text" id="i-life" data-info="life" placeholder="예: 100세" autocomplete="off"></div>
 <div class="field"><label for="i-planner">설계사</label><input type="text" id="i-planner" data-info="planner" placeholder="이름 · 소속" autocomplete="off"></div>
 <div class="field"><label for="i-contact">설계사 연락처</label><input type="text" id="i-contact" data-info="contact" placeholder="010-0000-0000" inputmode="tel" autocomplete="off"></div>
+<div class="field"><label for="i-silson">실손보험</label><select id="i-silson" data-info="silson" class="sel-sm"><option value="">선택 안 함</option><option>미가입</option><option>1세대</option><option>2세대</option><option>3세대</option><option>4세대</option><option>5세대</option><option>세대 모름</option></select></div>
 <div class="field"><label id="l-type">고객 유형</label>
 <div class="seg" role="group" aria-labelledby="l-type">
 <button type="button" data-driver="1" aria-pressed="true">운전자형</button>
@@ -189,8 +193,8 @@
 </div>
 </div>
 <div class="grid-scroll"><table class="gt" id="gt"></table></div>
-<p class="unit-note">단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
-<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 비급여암치료 칸에는 급여암치료 금액이, 비급여암특정치료 칸에는 급여·비급여암치료 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
+<p class="unit-note">실손보험은 이 표에서 빼고, 위 고객 정보의 ‘실손보험’에 세대만 골라 주세요. 실제 받는 금액은 <a href="/silson/">실손 계산기</a>에서 볼 수 있어요.<br>단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
+<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 비급여암치료 칸에는 급여암치료 금액이, 비급여암특정치료 칸에는 급여·비급여암치료 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
 </section>
 
 <section class="panel" aria-labelledby="h-result">
@@ -208,6 +212,7 @@
 </figure>
 </div>
 <ul class="legend" id="legend"></ul>
+<p class="silson-line" id="silson-line" hidden></p>
 <div class="tiles">
 <div class="tile"><span>현재 월 보험료</span><b id="t-now">0<small>원</small></b></div>
 <div class="tile"><span>제안 후 월 보험료</span><b id="t-prop">0<small>원</small></b></div>
@@ -265,12 +270,6 @@
     { cat: 0, id: 'dDis', name: '질병후유장해(3%↑)', short: '질병장해', std: 3000 },
     { cat: 0, id: 'aDis', name: '상해후유장해(3%↑)', short: '상해장해', std: 5000 },
 
-    { cat: 1, id: 'mDi', name: '질병입원', short: '질병입원', std: 5000, max: true },
-    { cat: 1, id: 'mDo', name: '질병통원(회당)', short: '질병통원', std: 30, max: true },
-    { cat: 1, id: 'mAi', name: '상해입원', short: '상해입원', std: 5000, max: true },
-    { cat: 1, id: 'mAo', name: '상해통원(회당)', short: '상해통원', std: 30, max: true },
-    { cat: 1, id: 'm3', name: '3대비급여(연간)', short: '3대비급여', std: 350, max: true },
-
     { cat: 2, id: 'cHigh', name: '고액암', short: '고액암', std: 5000, inc: ['cGen'] },
     { cat: 2, id: 'cGen', name: '일반암', short: '일반암', std: 3000 },
     { cat: 2, id: 'cSim', name: '유사암', short: '유사암', std: 600 },
@@ -327,7 +326,7 @@
   function defaultStd() { return ITEMS.map(function (it) { return it.std; }); }
   function blankState() {
     return {
-      info: { client: '', income: '', period: '', life: '', planner: '', contact: '', driver: true },
+      info: { client: '', income: '', period: '', life: '', planner: '', contact: '', silson: '', driver: true },
       std: defaultStd(),
       ex: [{ name: '기존 1', keep: true, amt: zeros(), prem: 0 }],
       nw: { name: '신규 제안', amt: zeros(), prem: 0 }
@@ -512,7 +511,8 @@
 
   /* ---------- 고객 정보 ---------- */
   document.querySelectorAll('[data-info]').forEach(function (inp) {
-    inp.addEventListener('input', function () { S.info[inp.dataset.info] = inp.value; scheduleDraw(); });
+    var on = function () { S.info[inp.dataset.info] = inp.value; scheduleDraw(); };
+    inp.addEventListener('input', on); inp.addEventListener('change', on);
   });
   var segBtns = document.querySelectorAll('[data-driver]');
   segBtns.forEach(function (b) {
@@ -529,14 +529,12 @@
   });
   document.getElementById('btn-sample').addEventListener('click', function () {
     S = blankState();
-    S.info = { client: '홍길동', income: '연 4,000만원', period: '20년납/비갱신', life: '100세', planner: '', contact: '', driver: true };
+    S.info = { client: '홍길동', income: '연 4,000만원', period: '20년납/비갱신', life: '100세', planner: '', contact: '', silson: '3세대', driver: true };
     S.ex = [
       { name: 'A생명 종신', keep: true, prem: 74360,
         amt: amtOf({ dDeath: 3000, aDeath: 6000, cGen: 2000, cSim: 400, bHem: 1000, hAmi: 1000, nDay: 2, sD: 30, sA: 30, sDmax: 300, sDmin: 10 }) },
       { name: 'B화재 운전자', keep: false, prem: 12000,
-        amt: amtOf({ vLia: 10000, vSet: 7000, vFine: 2000, vLaw: 500, vInj: 20 }) },
-      { name: 'D손보 실손', keep: true, prem: 18500,
-        amt: amtOf({ mDi: 5000, mDo: 25, mAi: 5000, mAo: 25, m3: 350 }) }
+        amt: amtOf({ vLia: 10000, vSet: 7000, vFine: 2000, vLaw: 500, vInj: 20 }) }
     ];
     S.nw = { name: 'C화재 통합', prem: 89000,
       amt: amtOf({ dDis: 3000, aDis: 5000, cHigh: 3000, cGen: 1000, cSim: 200, bStr: 1000, bCvd: 1000, bAll: 1000,
@@ -645,6 +643,10 @@
   function drawAll() {
     serNow = series(exSum); serProp = series(propSum);
     renderCanvas(cvNow, serNow); renderCanvas(cvProp, serProp);
+    var sl = document.getElementById('silson-line'), sv = S.info.silson;
+    sl.hidden = !sv;
+    if (sv) sl.innerHTML = '<b>실손보험:</b> ' + (sv === '미가입' ? '미가입 — 실손은 가장 기본이 되는 보장이라 먼저 확인이 필요해요.' : sv + ' 가입') +
+      ' · <a href="/silson/" target="_blank" rel="noopener">실손 계산기로 실제 받는 금액 보기 →</a>';
     document.getElementById('cnt-now').innerHTML = cntHtml(count(serNow));
     document.getElementById('cnt-prop').innerHTML = cntHtml(count(serProp));
     var pn = premNow(), pp = premProp(), df = pp - pn;
@@ -657,7 +659,7 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleDraw);
 
   // 범례
-  document.getElementById('legend').innerHTML = CATS.map(function (c) {
+  document.getElementById('legend').innerHTML = CATS.filter(function (c, i) { return ITEMS.some(function (it) { return it.cat === i; }); }).map(function (c) {
     return '<li><i class="dot" style="background:' + c.color + '"></i>' + c.name + '</li>';
   }).join('') + '<li><i class="sw-std"></i>바깥 원 = 표준 100%</li>';
 
@@ -746,6 +748,7 @@
     if (info.period) meta.push('납입가능 ' + info.period);
     if (info.life) meta.push('기대수명 ' + info.life);
     meta.push(info.driver ? '운전자형' : '비운전형');
+    if (info.silson) meta.push('실손 ' + info.silson);
     ctx.fillStyle = INK2; ctx.font = '400 15px ' + FONT; ctx.fillText(fitText(ctx, meta.join('  ·  '), W - P * 2 - 300), P, y + 88);
     ctx.textAlign = 'right';
     var ry = y + 14;
@@ -774,7 +777,7 @@
 
     // 범례
     ctx.font = '400 14px ' + FONT; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-    var items = CATS.map(function (c) { return { t: c.name, c: c.color }; });
+    var items = CATS.filter(function (c, i) { return ITEMS.some(function (it) { return it.cat === i; }); }).map(function (c) { return { t: c.name, c: c.color }; });
     items.push({ t: '바깥 원 = 표준 100%', std: true });
     var lw = items.reduce(function (s, it) { return s + 20 + ctx.measureText(it.t).width + 22; }, -22);
     var lx = (W - lw) / 2, ly = y + 8;

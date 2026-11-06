@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 실손, 얼마 나올까? · josung.kr</title>
+<meta name="description" content="가입 시기와 병원 영수증 숫자 몇 개만 넣으면, 지금 내 실손보험으로 대략 얼마 받는지와 5세대 기준이면 얼마인지 비교해 드려요.">
+<meta property="og:title" content="내 실손, 얼마 나올까? · josung.kr">
+<meta property="og:description" content="영수증 따라 숫자 몇 개만. 지금 내 실손으로 얼마, 5세대라면 얼마.">
+<meta property="og:url" content="https://josung.kr/silson/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://josung.kr/assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+.sl-hero{padding:56px 0 28px}
+.sl-hero h1{margin:12px 0 14px;font-family:var(--serif);font-size:40px;line-height:1.3}
+.sl-hero .lead{margin:0;font-size:17px;color:var(--text2);max-width:36em}
+.wrap.sl{max-width:960px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px}
+.panel h2{margin:0 0 4px;font-family:var(--serif);font-size:22px;line-height:1.4}
+.panel .sub{margin:0 0 20px;font-size:15px;color:var(--text2)}
+.step{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-right:8px;border-radius:50%;background:var(--accent-light);color:var(--accent-dark);font:700 14px var(--sans);vertical-align:3px}
+.q{margin:0 0 10px;font-weight:500;font-size:16px}
+.q + .chips{margin-bottom:22px}
+.row-sel{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+select{min-height:48px;padding:0 40px 0 14px;border:1px solid var(--border2);border-radius:10px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235C554D' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 14px center;color:var(--text);font:16px var(--sans);appearance:none;-webkit-appearance:none;cursor:pointer}
+select:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.or{font-size:14px;color:var(--text2)}
+.gen-card{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:12px;background:var(--accent-light);border:1px solid #C9E0D3;margin-top:8px}
+.gen-card b.g{flex:0 0 auto;font-family:var(--serif);font-size:22px;color:var(--accent-dark);line-height:1.3}
+.gen-card p{margin:0;font-size:15px;color:var(--text-body)}
+.gen-card p + p{margin-top:2px;color:var(--text2);font-size:14px}
+details.help{margin-top:12px;font-size:15px}
+details.help summary{cursor:pointer;color:var(--accent);font-weight:500;padding:6px 0}
+details.help .box{margin-top:8px;padding:16px 18px;border-radius:12px;background:var(--bg);border:1px solid var(--border)}
+.gen-tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+.gen-tbl th,.gen-tbl td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:left}
+.gen-tbl th{font-weight:500;color:var(--text2);background:var(--surface2)}
+
+/* 영수증 */
+.rc-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:28px;align-items:start}
+.rc-img{border:1px solid var(--border);border-radius:12px;background:#fff;padding:10px}
+.rc-img .sv{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.rc-img svg{display:block;width:100%;height:auto}
+@media (max-width:640px){.rc-img svg{min-width:540px}}
+.mob-hint{display:none}
+@media (max-width:640px){.mob-hint{display:inline}}
+.rc-img figcaption{margin:8px 4px 2px;font-size:13px;color:var(--text2)}
+.fields{display:flex;flex-direction:column;gap:14px}
+.fl{display:grid;grid-template-columns:30px 1fr;gap:4px 10px;align-items:center}
+.fl .n{grid-row:1/3;align-self:start;margin-top:2px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font:700 14px var(--sans);display:flex;align-items:center;justify-content:center}
+.fl .n.sub{background:#fff;color:var(--accent-dark);border:1.5px solid var(--accent)}
+.fl label{font-weight:500;font-size:15px}
+.fl label small{display:block;font-weight:400;font-size:13px;color:var(--text2)}
+.money{position:relative}
+.money input{width:100%;min-height:48px;padding:0 40px 0 14px;border:1px solid var(--border2);border-radius:10px;background:#fff;color:var(--text);font:17px var(--sans);font-variant-numeric:tabular-nums;text-align:right}
+.money input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.money span{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text2);pointer-events:none}
+.group-label{margin:6px 0 -4px;font-size:13px;font-weight:700;color:var(--text2)}
+.check-sum{padding:12px 14px;border-radius:10px;background:var(--bg);font-size:14px;color:var(--text-body)}
+.check-sum b{font-variant-numeric:tabular-nums}
+.warn{color:var(--danger)}
+
+/* 결과 */
+.res-empty{padding:28px;text-align:center;color:var(--text2);background:var(--bg);border-radius:12px}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.big .card2{padding:22px 24px;border-radius:14px;border:1px solid var(--border);background:var(--bg)}
+.big .card2.me{background:var(--accent-light);border-color:#C9E0D3}
+.big .lbl{display:block;font-size:15px;color:var(--text2)}
+.big .val{display:block;font-size:34px;font-weight:700;line-height:1.35;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.big .val small{font-size:18px;font-weight:500}
+.big .note{display:block;font-size:14px;color:var(--text2)}
+.paid{margin:14px 0 0;font-size:15px;color:var(--text-body)}
+.bars{margin-top:24px}
+.bars h3{margin:0 0 10px;font-size:16px}
+.bar{display:grid;grid-template-columns:118px 1fr 100px;gap:10px;align-items:center;padding:5px 0;font-size:14px}
+.bar .t{color:var(--text2)}
+.bar.cur .t{color:var(--text);font-weight:700}
+.bar .track{height:14px;border-radius:0 4px 4px 0;background:var(--surface2);position:relative;overflow:hidden}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:0 4px 4px 0;background:#86b6ef}
+.bar.cur .fill{background:var(--accent)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+.prem{margin-top:22px;padding:16px 18px;border-radius:12px;border:1px solid var(--border);background:#fff;font-size:15px;color:var(--text-body)}
+.prem p{margin:0}
+.prem p + p{margin-top:6px}
+details.calc{margin-top:18px}
+details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:6px 0}
+.calc-tbl{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px;font-variant-numeric:tabular-nums}
+.calc-tbl th,.calc-tbl td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:right;vertical-align:top}
+.calc-tbl th:first-child,.calc-tbl td:first-child{text-align:left}
+.calc-tbl thead th{font-weight:500;color:var(--text2);background:var(--surface2)}
+.calc-tbl td small{display:block;color:var(--text2);font-size:12px}
+.calc-tbl tfoot td{font-weight:700;border-top:2px solid var(--border2)}
+.disc{margin-top:24px;padding:20px;border-radius:14px;background:#FFF9C7;border:1px solid #F2E27A}
+.disc p{margin:0;color:#3A3420}
+.disc p + p{margin-top:6px;font-size:14px}
+.disc .btns{margin-top:14px}
+
+@media (max-width:760px){
+  .rc-grid{grid-template-columns:1fr}
+  .rc-img{position:static}
+}
+@media (max-width:640px){
+  .sl-hero{padding:40px 0 20px}
+  .sl-hero h1{font-size:30px}
+  .panel{padding:20px 16px}
+  .wrap.sl{padding:0 16px}
+  .big .val{font-size:28px}
+  .bar{grid-template-columns:96px 1fr 88px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+<div class="wrap">
+<a class="brand" href="/"><b>조성</b><span>josung.kr</span></a>
+<nav class="nav" aria-label="주 메뉴">
+<a href="/host/">Host</a>
+<a href="/#tools">계산기</a>
+<a href="/silson/" aria-current="page">실손</a>
+<a href="/coverage/">보장분석</a>
+<a href="/#suremate">슈어메이트</a>
+<a href="/#contents">콘텐츠</a>
+<a href="/apply/">신청</a>
+</nav>
+</div>
+</header>
+
+<main>
+<section class="sl-hero">
+<div class="wrap sl">
+<p class="eyebrow">누구나 쓰는 계산기</p>
+<h1>내 실손, 얼마 나올까?</h1>
+<p class="lead">가입 시기와 병원 영수증 숫자 몇 개만 넣으면, 지금 내 실손보험으로 대략 얼마를 돌려받는지, 그리고 최신 5세대 기준이라면 얼마인지 비교해 드려요.</p>
+</div>
+</section>
+
+<div class="wrap sl">
+
+<!-- 1. 세대 -->
+<section class="panel" aria-labelledby="h1s">
+<h2 id="h1s"><span class="step">1</span>언제 가입했나요?</h2>
+<p class="sub">실손보험은 가입 시기에 따라 ‘세대’가 나뉘고, 세대마다 돌려받는 비율이 달라요.</p>
+<div class="row-sel">
+<select id="sel-y" aria-label="가입 연도"></select>
+<select id="sel-m" aria-label="가입 월"></select>
+<span class="or">또는 세대를 알면 바로 고르기</span>
+</div>
+<div class="chips" role="group" aria-label="세대 직접 고르기" id="gen-chips"></div>
+<div id="gen-card"></div>
+<details class="help">
+<summary>가입 시기를 모르겠어요</summary>
+<div class="box">
+<p style="margin:0">보험증권의 <b>계약일(보험 시작일)</b>을 보면 돼요. 증권이 없다면 가입한 보험사 앱이나 고객센터, 또는 <a href="https://cont.insure.or.kr" target="_blank" rel="noopener">내보험찾아줌</a>에서 확인할 수 있어요.</p>
+<table class="gen-tbl">
+<thead><tr><th>세대</th><th>가입 시기</th></tr></thead>
+<tbody>
+<tr><td>1세대</td><td>2009년 9월 이전</td></tr>
+<tr><td>2세대</td><td>2009년 10월 ~ 2017년 3월</td></tr>
+<tr><td>3세대</td><td>2017년 4월 ~ 2021년 6월</td></tr>
+<tr><td>4세대</td><td>2021년 7월 ~ 2026년 5월 5일</td></tr>
+<tr><td>5세대</td><td>2026년 5월 6일부터</td></tr>
+</tbody>
+</table>
+</div>
+</details>
+</section>
+
+<!-- 2. 진료 -->
+<section class="panel" aria-labelledby="h2s">
+<h2 id="h2s"><span class="step">2</span>어떤 진료였나요?</h2>
+<p class="sub">영수증 맨 위에 ‘외래’ 또는 ‘입원’에 체크돼 있어요.</p>
+<p class="q" id="q-kind">입원했나요, 외래(통원)였나요?</p>
+<div class="chips" role="radiogroup" aria-labelledby="q-kind">
+<label><input type="radio" name="kind" value="out" checked><span>외래 (통원)</span></label>
+<label><input type="radio" name="kind" value="in"><span>입원</span></label>
+</div>
+<p class="q" id="q-hosp">어떤 병원이었나요?</p>
+<div class="chips" role="radiogroup" aria-labelledby="q-hosp">
+<label><input type="radio" name="hosp" value="clinic" checked><span>의원 (동네 병원)</span></label>
+<label><input type="radio" name="hosp" value="hosp"><span>병원</span></label>
+<label><input type="radio" name="hosp" value="general"><span>종합병원</span></label>
+<label><input type="radio" name="hosp" value="tertiary"><span>상급종합병원 (대학병원)</span></label>
+</div>
+<p class="q" id="q-sev">암·뇌혈관·심장질환·희귀난치병 같은 큰 병 치료였나요?</p>
+<div class="chips" role="radiogroup" aria-labelledby="q-sev" style="margin-bottom:6px">
+<label><input type="radio" name="sev" value="0" checked><span>아니요</span></label>
+<label><input type="radio" name="sev" value="1"><span>네, 큰 병이에요</span></label>
+</div>
+<p class="sub" style="margin:0">건강보험 ‘산정특례’로 등록된 중증 질환이면 ‘네’를 고르세요. 5세대 계산에만 영향을 줘요.</p>
+</section>
+
+<!-- 3. 영수증 -->
+<section class="panel" aria-labelledby="h3s">
+<h2 id="h3s"><span class="step">3</span>영수증 보고 따라 넣기</h2>
+<p class="sub">병원 영수증(진료비 계산서·영수증)은 어느 병원이나 생김새가 같아요. 그림의 번호 칸에 있는 숫자를 그대로 옮겨 주세요.</p>
+<div class="rc-grid">
+<figure class="rc-img" id="rc-img" style="margin:0"></figure>
+<div class="fields">
+<p class="group-label">맨 아래 ‘합계’ 줄</p>
+<div class="fl"><span class="n">1</span><label for="f1">급여 · 본인부담금<small>‘일부 본인부담’ 아래 ‘본인부담금’ 칸</small></label>
+<div class="money"><input id="f1" inputmode="numeric" autocomplete="off" placeholder="0"><span>원</span></div></div>
+<div class="fl"><span class="n">2</span><label for="f2">급여 · 전액본인부담<small>없으면 비워두세요</small></label>
+<div class="money"><input id="f2" inputmode="numeric" autocomplete="off" placeholder="0"><span>원</span></div></div>
+<div class="fl"><span class="n">3</span><label for="f3">비급여 합계<small>비급여 칸이 둘로 나뉘어 있으면 더해서</small></label>
+<div class="money"><input id="f3" inputmode="numeric" autocomplete="off" placeholder="0"><span>원</span></div></div>
+<p class="group-label">③ 비급여 중에서 (해당 줄의 비급여 칸, 없으면 비워두세요)</p>
+<div class="fl"><span class="n sub">4</span><label for="f4">주사료<small>영양·비타민 등 비급여 주사</small></label>
+<div class="money"><input id="f4" inputmode="numeric" autocomplete="off" placeholder="0"><span>원</span></div></div>
+<div class="fl"><span class="n sub">5</span><label for="f5">재활 및 물리치료료<small>도수치료·체외충격파·증식치료</small></label>
+<div class="money"><input id="f5" inputmode="numeric" autocomplete="off" placeholder="0"><span>원</span></div></div>
+<div class="fl"><span class="n sub">6</span><label for="f6">MRI 진단료</label>
+<div class="money"><input id="f6" inputmode="numeric" autocomplete="off" placeholder="0"><span>원</span></div></div>
+<div class="check-sum" id="check-sum">①+②+③을 넣으면 여기서 영수증 숫자와 맞춰볼 수 있어요.</div>
+</div>
+</div>
+</section>
+
+<!-- 결과 -->
+<section class="panel" aria-labelledby="hrs" aria-live="polite">
+<h2 id="hrs">예상 결과</h2>
+<p class="sub">대략적인 계산이에요. 아래 안내를 꼭 함께 봐 주세요.</p>
+<div id="result"><div class="res-empty">가입 시기와 영수증 숫자(①~③)를 넣으면 결과가 나와요.</div></div>
+<div class="disc">
+<p><b>대략적인 계산이에요.</b> 실제 보험금은 약관, 면책 기간, 보장되지 않는 항목(치료재료대 일부 등)에 따라 달라질 수 있어요. 정확한 금액은 <b>진료비 세부내역서</b>를 가지고 담당 설계사님과 함께 확인해 보세요.</p>
+<p>약국 영수증, 상급병실(1·2인실) 차액, 본인부담 상한액 초과금, 연간 한도·횟수는 이 계산에 넣지 않았어요. 1세대는 손해보험사 상품 기준이고, 생명보험사 상품은 내 부담이 더 있을 수 있어요.</p>
+<div class="btns">
+<a class="btn btn-kakao" href="https://pf.kakao.com/_ewmWX/chat" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.5c-5 0-9 3.1-9 7 0 2.5 1.7 4.7 4.2 5.9l-.9 3.4c-.1.3.3.6.6.4l4-2.6h1.1c5 0 9-3.1 9-7s-4-7.1-9-7.1z"/></svg>담당 설계사가 없다면, 카톡으로 물어보기</a>
+</div>
+</div>
+<p class="muted" style="margin:16px 0 0;font-size:13px">입력한 숫자는 이 브라우저 안에서만 계산되고 어디에도 저장·전송되지 않아요.</p>
+</section>
+
+</div>
+</main>
+
+<footer class="site-footer">
+<div class="wrap">
+<p class="bye">즐겁게 놀다 가셨길. 또 오세요.</p>
+<div class="legal">
+<span>별재무설계 · 대표 조성 · 사업자등록번호 142-09-64413</span>
+<span><a href="/privacy/">개인정보처리방침</a></span>
+</div>
+</div>
+</footer>
+
+<script>
+(function () {
+  /* ================= 세대 정의 =================
+     모든 수치는 '대략 계산'용 대표값입니다. 실제는 상품·약관마다 다릅니다.
+     2a: 2세대 앞부분(2009.10~2015.8), 2b: 2세대 뒷부분(2015.9~2017.3)                */
+  var GENS = {
+    '1':  { label: '1세대', range: '2009년 9월 이전', desc: '내 부담이 거의 없는 세대예요. 입원비는 대부분, 통원은 회당 5천 원 정도만 빼고 돌려받아요.', sub: '손해보험사 상품 기준. 상품마다 조건이 많이 달라요.' },
+    '2a': { label: '2세대', range: '2009년 10월 ~ 2015년 8월', desc: '입원은 10%만 내가 부담해요. 통원은 병원 종류에 따라 1만~2만 원을 빼고 돌려받아요.', sub: '입원 시 내 부담은 1년에 200만 원까지만.' },
+    '2b': { label: '2세대', range: '2015년 9월 ~ 2017년 3월', desc: '급여는 10%, 비급여는 20%를 내가 부담해요. 통원은 1만~2만 원과 비율 중 큰 금액을 빼요.', sub: '입원 시 내 부담은 1년에 200만 원까지만.' },
+    '3':  { label: '3세대', range: '2017년 4월 ~ 2021년 6월', desc: '급여 10%, 비급여 20%를 내가 부담해요. 도수치료·주사·MRI는 특약으로 30%(최소 2만 원)를 부담해요.', sub: '‘착한 실손’이라 불리는 세대예요.' },
+    '4':  { label: '4세대', range: '2021년 7월 ~ 2026년 5월 5일', desc: '급여 20%, 비급여 30%를 내가 부담해요. 통원은 급여 1만~2만 원, 비급여 3만 원 이상을 빼요.', sub: '비급여를 많이 받으면 다음 해 보험료가 오를 수 있어요.' },
+    '5':  { label: '5세대', range: '2026년 5월 6일부터', desc: '급여 입원 20%. 비급여는 큰 병(중증)이면 30%, 그 외는 50%를 부담하고 도수치료·체외충격파·비급여 주사는 큰 병이 아니면 보장되지 않아요.', sub: '보험료는 4세대보다 약 30% 낮은 수준으로 알려져 있어요.' }
+  };
+  var ORDER = ['1', '2a', '2b', '3', '4', '5'];
+  var FIX = { clinic: 10000, hosp: 15000, general: 20000, tertiary: 20000 };     // 2·3세대 통원 공제
+  var FIX45 = { clinic: 10000, hosp: 10000, general: 20000, tertiary: 20000 };   // 4·5세대 급여 통원 최소공제
+  var NHI = { clinic: 0.3, hosp: 0.4, general: 0.5, tertiary: 0.6 };             // 건강보험 외래 본인부담률(대표값)
+
+  function genOf(y, m) {
+    var v = y * 100 + m;
+    if (v <= 200909) return '1';
+    if (v <= 201508) return '2a';
+    if (v <= 201703) return '2b';
+    if (v <= 202106) return '3';
+    if (v <= 202604) return '4';
+    if (v === 202605) return '5';   // 5월 5일 이전 가입이면 4세대 — 카드에서 안내
+    return '5';
+  }
+
+  /* ================= 계산 =================
+     x: { kind:'in'|'out', hosp, sev(bool), G(급여 = ①+②), C(비급여 합계 ③), inj(④), rehab(⑤), mri(⑥) }
+     반환: { pay, rows:[{name, base, ded, pay, how}] }                                          */
+  function clamp(v, cap) { v = Math.max(0, v); return cap != null ? Math.min(v, cap) : v; }
+  function row(name, base, ded, cap, how) {
+    ded = Math.min(Math.max(0, ded), base);
+    var pay = clamp(base - ded, cap);
+    return { name: name, base: base, ded: base - pay, pay: pay, how: how + (cap != null && base - ded > cap ? ' · 1회 한도 ' + won(cap) : '') };
+  }
+  function calc(g, x) {
+    var G = x.G, C = x.C, three = Math.min(C, x.inj + x.rehab + x.mri), Ng = Math.max(0, C - three);
+    var R = [], IN = x.kind === 'in', h = x.hosp;
+    if (g === '1') {
+      if (IN) { R.push(row('급여 + 비급여', G + C, 0, null, '내 부담 없음')); }
+      else { R.push(row('급여 + 비급여', G + C, 5000, null, '5천 원 공제')); }
+    } else if (g === '2a' || g === '2b') {
+      var bRate = g === '2a' ? 0.1 : 0.2;
+      if (IN) {
+        var d2 = Math.min(0.1 * G + bRate * C, 2000000);
+        R.push(row('급여 + 비급여', G + C, d2, null, g === '2a' ? '10% 부담' : '급여 10% · 비급여 20% 부담'));
+      } else {
+        var d2o = g === '2a' ? FIX[h] : Math.max(FIX[h], 0.1 * G + 0.2 * C);
+        R.push(row('급여 + 비급여', G + C, d2o, 250000, g === '2a' ? won(FIX[h]) + ' 공제' : won(FIX[h]) + '과 급여 10%·비급여 20% 중 큰 금액 공제'));
+      }
+    } else if (g === '3') {
+      if (IN) {
+        R.push(row('급여 + 일반 비급여', G + Ng, Math.min(0.1 * G + 0.2 * Ng, 2000000), null, '급여 10% · 비급여 20% 부담'));
+        sp3(R, x, 0, '30% 부담');
+      } else {
+        R.push(row('급여 + 일반 비급여', G + Ng, Math.max(FIX[h], 0.1 * G + 0.2 * Ng), 250000, won(FIX[h]) + '과 급여 10%·비급여 20% 중 큰 금액 공제'));
+        sp3(R, x, 20000, '2만 원과 30% 중 큰 금액 공제');
+      }
+    } else if (g === '4') {
+      if (IN) {
+        R.push(row('급여', G, 0.2 * G, null, '20% 부담'));
+        R.push(row('비급여', Ng, 0.3 * Ng, null, '30% 부담'));
+        sp3(R, x, 0, '30% 부담');
+      } else {
+        R.push(row('급여', G, Math.max(FIX45[h], 0.2 * G), 200000, won(FIX45[h]) + '과 20% 중 큰 금액 공제'));
+        R.push(row('비급여', Ng, Math.max(30000, 0.3 * Ng), 200000, '3만 원과 30% 중 큰 금액 공제'));
+        sp3(R, x, 30000, '3만 원과 30% 중 큰 금액 공제');
+      }
+    } else if (g === '5') {
+      if (IN) {
+        R.push(row('급여', G, 0.2 * G, null, '20% 부담'));
+        if (x.sev) {
+          var d5 = 0.3 * C;
+          if (h === 'general' || h === 'tertiary') d5 = Math.min(d5, 5000000);
+          R.push(row('비급여 (중증)', C, d5, null, '30% 부담'));
+        } else {
+          R.push(row('비급여 (비중증)', Ng + x.mri, 0.5 * (Ng + x.mri), 10000000, '50% 부담'));
+          if (x.inj + x.rehab > 0) R.push(row('도수·체외충격파·주사', Math.min(C, x.inj + x.rehab), Infinity, null, '5세대 비중증은 보장 안 함'));
+        }
+      } else {
+        var dg = Math.max(G * NHI[h], 0.2 * G, FIX45[h]);
+        R.push(row('급여', G, dg, 200000, '건강보험 본인부담률(' + Math.round(NHI[h] * 100) + '%)·20%·' + won(FIX45[h]) + ' 중 큰 금액 공제'));
+        if (x.sev) R.push(row('비급여 (중증)', C, Math.max(30000, 0.3 * C), null, '3만 원과 30% 중 큰 금액 공제'));
+        else {
+          R.push(row('비급여 (비중증)', Ng + x.mri, Math.max(50000, 0.5 * (Ng + x.mri)), 200000, '5만 원과 50% 중 큰 금액 공제'));
+          if (x.inj + x.rehab > 0) R.push(row('도수·체외충격파·주사', Math.min(C, x.inj + x.rehab), Infinity, null, '5세대 비중증은 보장 안 함'));
+        }
+      }
+    }
+    var pay = R.reduce(function (s, r) { return s + r.pay; }, 0);
+    return { pay: Math.round(pay), rows: R.filter(function (r) { return r.base > 0; }) };
+  }
+  // 3·4세대 3대 비급여(특약): 항목별 따로 공제
+  function sp3(R, x, minDed, how) {
+    var left = x.C;
+    [['비급여 주사', x.inj], ['도수·체외충격파·증식', x.rehab], ['MRI', x.mri]].forEach(function (a) {
+      var v = Math.min(a[1], Math.max(0, left)); left -= v;
+      if (v > 0) R.push(row(a[0] + ' (특약)', v, Math.max(minDed, 0.3 * v), null, how));
+    });
+  }
+
+  /* ================= 화면 ================= */
+  function won(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
+  function num(id) { var v = parseFloat(String(document.getElementById(id).value).replace(/[^0-9.]/g, '')); return isFinite(v) ? v : 0; }
+  var state = { gen: null };
+
+  // 연·월 선택
+  var selY = document.getElementById('sel-y'), selM = document.getElementById('sel-m');
+  var yh = '<option value="">가입 연도</option><option value="2008">2008년 이전</option>';
+  for (var y = 2009; y <= 2026; y++) yh += '<option value="' + y + '">' + y + '년</option>';
+  selY.innerHTML = yh;
+  var mh = '<option value="">월</option>';
+  for (var m = 1; m <= 12; m++) mh += '<option value="' + m + '">' + m + '월</option>';
+  selM.innerHTML = mh;
+  function fromDate() {
+    var yv = +selY.value, mv = +selM.value;
+    if (!yv) return;
+    if (yv === 2008) { setGen('1', true); return; }
+    if (!mv) { selM.focus(); return; }
+    setGen(genOf(yv, mv), true, yv === 2026 && mv === 5);
+  }
+  selY.addEventListener('change', fromDate);
+  selM.addEventListener('change', fromDate);
+
+  // 세대 칩
+  var chips = document.getElementById('gen-chips');
+  chips.innerHTML = ['1', '2a', '3', '4', '5'].map(function (g) {
+    return '<label><input type="radio" name="gen" value="' + g + '"><span>' + GENS[g].label + '</span></label>';
+  }).join('');
+  chips.addEventListener('change', function (e) { selY.value = ''; selM.value = ''; setGen(e.target.value, false); });
+
+  function setGen(g, fromSel, may) {
+    state.gen = g;
+    chips.querySelectorAll('input').forEach(function (i) { i.checked = (i.value === g) || (g === '2b' && i.value === '2a'); });
+    var G = GENS[g];
+    document.getElementById('gen-card').innerHTML = '<div class="gen-card"><b class="g">' + G.label + '</b><div><p>' + G.desc + '</p><p>' +
+      (g === '2a' && !fromSel ? '2세대는 2009년 10월~2017년 3월 가입. 2015년 9월 이후 가입이면 연·월로 고르면 더 정확해요.' : G.range + ' 가입 · ' + G.sub) +
+      (may ? ' 2026년 5월 1~5일 가입이면 4세대예요.' : '') + '</p></div></div>';
+    render();
+  }
+
+  // 금액 입력: 콤마 표시
+  ['f1', 'f2', 'f3', 'f4', 'f5', 'f6'].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.addEventListener('input', render);
+    el.addEventListener('blur', function () { var v = num(id); el.value = v ? v.toLocaleString('ko-KR') : ''; });
+    el.addEventListener('focus', function () { setTimeout(function () { try { el.select(); } catch (_) {} }, 0); });
+  });
+  document.querySelectorAll('input[name=kind],input[name=hosp],input[name=sev]').forEach(function (r) { r.addEventListener('change', render); });
+
+  function val(name) { var c = document.querySelector('input[name=' + name + ']:checked'); return c ? c.value : null; }
+
+  function render() {
+    var x = { kind: val('kind'), hosp: val('hosp'), sev: val('sev') === '1',
+      G: num('f1') + num('f2'), C: num('f3'), inj: num('f4'), rehab: num('f5'), mri: num('f6') };
+    var paid = x.G + x.C;
+    // 합계 확인
+    var cs = document.getElementById('check-sum');
+    var sub = x.inj + x.rehab + x.mri;
+    if (paid > 0) {
+      cs.innerHTML = '①+②+③ = <b>' + won(paid) + '</b> · 영수증 오른쪽의 <b>‘환자부담총액’</b>과 비슷하면 잘 넣은 거예요.' +
+        (sub > x.C ? '<br><span class="warn">④~⑥의 합이 ③ 비급여 합계보다 커요. 다시 확인해 주세요.</span>' : '');
+    } else cs.textContent = '①+②+③을 넣으면 여기서 영수증 숫자와 맞춰볼 수 있어요.';
+
+    var box = document.getElementById('result');
+    if (!state.gen || paid <= 0) {
+      box.innerHTML = '<div class="res-empty">' + (!state.gen ? '먼저 ①번 단계에서 가입 시기(또는 세대)를 골라 주세요.' : '영수증 숫자(①~③)를 넣으면 결과가 나와요.') + '</div>';
+      return;
+    }
+    var cur = calc(state.gen, x), five = calc('5', x);
+    var isFive = state.gen === '5';
+    var h = '<div class="big">';
+    h += '<div class="card2 me"><span class="lbl">지금 내 실손(' + GENS[state.gen].label + ')으로</span><span class="val">약 ' + Math.round(cur.pay).toLocaleString('ko-KR') + '<small>원</small></span><span class="note">돌려받을 것으로 예상돼요</span></div>';
+    if (!isFive) {
+      var diff = five.pay - cur.pay;
+      h += '<div class="card2"><span class="lbl">5세대(최신) 기준이라면</span><span class="val">약 ' + Math.round(five.pay).toLocaleString('ko-KR') + '<small>원</small></span><span class="note">' +
+        (diff === 0 ? '지금과 같아요' : '지금보다 ' + won(Math.abs(diff)) + ' ' + (diff < 0 ? '적게' : '많이') + ' 받아요') + '</span></div>';
+    }
+    h += '</div>';
+    h += '<p class="paid">병원에 낸 돈 <b>' + won(paid) + '</b> 중 내가 최종 부담하는 돈은 약 <b>' + won(Math.max(0, paid - cur.pay)) + '</b>이에요.</p>';
+
+    // 세대별 막대
+    var gs = ['1', state.gen === '2b' ? '2b' : '2a', '3', '4', '5'];
+    var vals = gs.map(function (g) { return calc(g, x).pay; });
+    var mx = Math.max(paid, 1);
+    h += '<div class="bars"><h3>같은 영수증, 세대별로 보면</h3>';
+    gs.forEach(function (g, i) {
+      var curG = g === state.gen;
+      h += '<div class="bar' + (curG ? ' cur' : '') + '"><span class="t">' + GENS[g].label + (curG ? ' (내 실손)' : '') + '</span><span class="track"><span class="fill" style="width:' + (vals[i] / mx * 100).toFixed(1) + '%"></span></span><span class="v">' + won(vals[i]) + '</span></div>';
+    });
+    h += '<p class="muted" style="margin:6px 0 0;font-size:13px">막대 전체 길이 = 병원에 낸 돈 ' + won(paid) + '</p></div>';
+
+    // 보험료 안내 (중립)
+    if (!isFive) {
+      h += '<div class="prem"><p><b>보험료도 함께 봐야 해요.</b> 5세대는 비중증 비급여 보장이 줄어든 대신, 보험료가 4세대보다 약 30%, 1·2세대보다 50% 이상 낮은 수준으로 알려져 있어요(금융위원회 발표).</p>' +
+        '<p>병원에 자주 가는지, 어떤 치료를 주로 받는지에 따라 유리한 쪽이 달라요. 갈아탈지는 서두르지 말고 지금 보험의 조건과 함께 따져 보세요.</p></div>';
+    }
+
+    // 계산 과정
+    h += '<details class="calc"><summary>계산 과정 자세히 보기</summary>';
+    h += tbl(GENS[state.gen].label + ' (내 실손)', cur);
+    if (!isFive) h += tbl('5세대', five);
+    h += '</details>';
+    box.innerHTML = h;
+  }
+  function tbl(title, r) {
+    var h = '<table class="calc-tbl"><thead><tr><th>' + title + '</th><th>낸 돈</th><th>빠지는 돈</th><th>받는 돈</th></tr></thead><tbody>';
+    r.rows.forEach(function (x) {
+      h += '<tr><td>' + x.name + '<small>' + x.how + '</small></td><td>' + won(x.base) + '</td><td>−' + won(x.ded) + '</td><td>' + won(x.pay) + '</td></tr>';
+    });
+    return h + '</tbody><tfoot><tr><td>합계</td><td></td><td></td><td>' + won(r.pay) + '</td></tr></tfoot></table>';
+  }
+
+  /* ================= 샘플 영수증 그림 ================= */
+  (function drawReceipt() {
+    var W = 560, x0 = 8, cols = [8, 150, 252, 354, 456, 552];   // 항목 | 본인부담금 | 공단부담금 | 전액본인부담 | 비급여
+    var rows = ['진찰료', '입원료', '식대', '투약 및 조제료', '주사료', '마취료', '처치 및 수술료', '검사료', '영상진단료', '재활 및 물리치료료', 'CT 진단료', 'MRI 진단료', '합계'];
+    var top = 96, rh = 26, H = top + rh * rows.length + 96;
+    var hl = { '주사료|4': 4, '재활 및 물리치료료|4': 5, 'MRI 진단료|4': 6, '합계|1': 1, '합계|3': 2, '합계|4': 3 };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="진료비 계산서·영수증 샘플. 번호 칸의 숫자를 옆 입력칸에 옮겨 적습니다." font-family="Noto Sans KR, system-ui, sans-serif">';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>';
+    s += '<text x="' + W / 2 + '" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="#1A1714">□ 외래  □ 입원   진료비 계산서 · 영수증</text>';
+    // 헤더
+    var hy = 44;
+    s += '<rect x="' + x0 + '" y="' + hy + '" width="' + (W - 16) + '" height="52" fill="#F2EFE9" stroke="#D0C9BF"/>';
+    s += t((cols[0] + cols[1]) / 2, hy + 31, '항목', 13, 500);
+    s += '<line x1="' + cols[1] + '" y1="' + hy + '" x2="' + cols[1] + '" y2="' + (hy + 52) + '" stroke="#D0C9BF"/>';
+    s += t((cols[1] + cols[4]) / 2, hy + 17, '급여', 13, 700);
+    s += '<line x1="' + cols[1] + '" y1="' + (hy + 24) + '" x2="' + cols[4] + '" y2="' + (hy + 24) + '" stroke="#D0C9BF"/>';
+    s += t((cols[1] + cols[3]) / 2, hy + 17 + 0, '', 12);
+    s += t((cols[1] + cols[2]) / 2, hy + 42, '본인부담금', 12, 500);
+    s += t((cols[2] + cols[3]) / 2, hy + 42, '공단부담금', 12, 500);
+    s += t((cols[3] + cols[4]) / 2, hy + 42, '전액본인부담', 12, 500);
+    s += t((cols[4] + cols[5]) / 2, hy + 31, '비급여', 13, 700);
+    [2, 3].forEach(function (c) { s += '<line x1="' + cols[c] + '" y1="' + (hy + 24) + '" x2="' + cols[c] + '" y2="' + (hy + 52) + '" stroke="#D0C9BF"/>'; });
+    s += '<line x1="' + cols[4] + '" y1="' + hy + '" x2="' + cols[4] + '" y2="' + (hy + 52) + '" stroke="#D0C9BF"/>';
+    // 본문
+    rows.forEach(function (name, i) {
+      var y = top + i * rh, isSum = name === '합계';
+      s += '<rect x="' + x0 + '" y="' + y + '" width="' + (W - 16) + '" height="' + rh + '" fill="' + (isSum ? '#F7F5F0' : '#fff') + '" stroke="#E2DDD6"/>';
+      s += '<text x="' + (cols[0] + 10) + '" y="' + (y + 17) + '" font-size="12.5" fill="#3F3A34"' + (isSum ? ' font-weight="700"' : '') + '>' + name + '</text>';
+      for (var c = 1; c <= 4; c++) {
+        s += '<line x1="' + cols[c] + '" y1="' + y + '" x2="' + cols[c] + '" y2="' + (y + rh) + '" stroke="#E2DDD6"/>';
+        var key = name + '|' + c;
+        if (hl[key]) {
+          var n = hl[key], main = n <= 3;
+          s += '<rect x="' + (cols[c] + 2) + '" y="' + (y + 2) + '" width="' + (cols[c + 1] - cols[c] - 4) + '" height="' + (rh - 4) + '" rx="4" fill="#EAF3EE" stroke="#1A6B4A" stroke-width="1.5"/>';
+          s += '<text x="' + (cols[c + 1] - 30) + '" y="' + (y + 17) + '" text-anchor="end" font-size="12" fill="#5C554D">00,000</text>';
+          s += '<circle cx="' + (cols[c + 1] - 14) + '" cy="' + (y + rh / 2) + '" r="9" fill="' + (main ? '#1A6B4A' : '#fff') + '" stroke="#1A6B4A" stroke-width="1.5"/>';
+          s += '<text x="' + (cols[c + 1] - 14) + '" y="' + (y + rh / 2 + 4) + '" text-anchor="middle" font-size="11" font-weight="700" fill="' + (main ? '#fff' : '#124D35') + '">' + n + '</text>';
+        }
+      }
+    });
+    // 오른쪽 아래: 금액 산정 내용
+    var by = top + rh * rows.length + 18;
+    s += '<rect x="' + cols[3] + '" y="' + by + '" width="' + (cols[5] - cols[3]) + '" height="60" fill="#fff" stroke="#D0C9BF"/>';
+    s += '<text x="' + (cols[3] + 10) + '" y="' + (by + 22) + '" font-size="12" fill="#5C554D">진료비 총액</text>';
+    s += '<text x="' + (cols[5] - 10) + '" y="' + (by + 22) + '" text-anchor="end" font-size="12" fill="#5C554D">000,000</text>';
+    s += '<text x="' + (cols[3] + 10) + '" y="' + (by + 46) + '" font-size="12.5" font-weight="700" fill="#1A1714">환자부담총액</text>';
+    s += '<text x="' + (cols[5] - 10) + '" y="' + (by + 46) + '" text-anchor="end" font-size="12" fill="#1A1714">≈ ①+②+③</text>';
+    s += '<text x="' + x0 + '" y="' + (by + 22) + '" font-size="12" fill="#5C554D">실제 영수증에는 항목이 더 많아요.</text>';
+    s += '<text x="' + x0 + '" y="' + (by + 40) + '" font-size="12" fill="#5C554D">번호가 있는 칸만 보면 돼요.</text>';
+    s += '</svg>';
+    function t(x, y, str, fs, fw) { return str ? '<text x="' + x + '" y="' + y + '" text-anchor="middle" font-size="' + fs + '" font-weight="' + (fw || 400) + '" fill="#3F3A34">' + str + '</text>' : ''; }
+    document.getElementById('rc-img').innerHTML = '<div class="sv">' + s + '</div><figcaption>진료비 계산서·영수증 샘플 · <b>①②③</b>은 맨 아래 합계 줄, <b>④⑤⑥</b>은 해당 줄의 비급여 칸이에요.<span class="mob-hint"> 그림은 옆으로 밀어서 볼 수 있어요.</span></figcaption>';
+  })();
+
+  render();
+})();
+</script>
+<script data-goatcounter="https://josung.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
