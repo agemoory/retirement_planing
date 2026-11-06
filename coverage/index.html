@@ -189,7 +189,7 @@
 </div>
 <div class="grid-scroll"><table class="gt" id="gt"></table></div>
 <p class="unit-note">단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
-<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
+<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 비급여암치료·암특정치료 칸에는 급여암치료 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
 </section>
 
 <section class="panel" aria-labelledby="h-result">
@@ -282,8 +282,8 @@
     { cat: 2, id: 'hAll', name: '통합심장질환', short: '통합심장', std: 1000 },
 
     { cat: 3, id: 'tCi', name: '급여암치료(연간)', short: '급여암치료', std: 1000 },
-    { cat: 3, id: 'tCn', name: '비급여암치료(연간)', short: '비급여암치료', std: 1000 },
-    { cat: 3, id: 'tCt', name: '암특정치료(연간)', desc: '표적·면역·양성자·다빈치', short: '암특정치료', std: 2000 },
+    { cat: 3, id: 'tCn', name: '비급여암치료(연간)', short: '비급여암치료', std: 1000, inc: ['tCi'] },
+    { cat: 3, id: 'tCt', name: '암특정치료(연간)', desc: '표적·면역·양성자·다빈치', short: '암특정치료', std: 2000, inc: ['tCi'] },
     { cat: 3, id: 'tB', name: '뇌혈관치료(연간)', short: '뇌혈관치료', std: 1000 },
     { cat: 3, id: 'tH', name: '심혈관치료(연간)', short: '심혈관치료', std: 1000 },
 
@@ -388,8 +388,8 @@
         lastCat = it.cat;
         h += '<tr class="cat"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + '</span></th></tr>';
       }
-      var note = it.desc || (it.incIdx.length ? '상위 담보 합산' : (it.max ? '중복 시 최대값' : ''));
-      var noteTitle = it.desc ? it.desc : it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
+      var note = [it.desc, it.incIdx.length ? '상위 담보 합산' : (it.max ? '중복 시 최대값' : '')].filter(Boolean).join(' · ');
+      var noteTitle = it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
         : '실손형(비례보상) 담보라 여러 계약이 있어도 더하지 않고 가장 큰 한도만 인정해요.';
       h += '<tr><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
       h += '<td class="std"><input type="text" inputmode="decimal" data-k="std" data-r="' + r + '" placeholder="0 = 제외" aria-label="' + it.name + ' 표준"></td>';
