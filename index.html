@@ -53,6 +53,13 @@
 </div>
 </section>
 
+<section class="mkt" id="mkt-wrap" aria-label="오늘의 시장 지표" hidden>
+<div class="wrap mkt-row">
+<ul class="mkt-list" id="mkt"></ul>
+<span class="mkt-time" id="mkt-time"></span>
+</div>
+</section>
+
 <section class="band section" id="tools">
 <div class="wrap">
 <div class="section-head">
@@ -258,6 +265,42 @@
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (j) { if (!j.videos || !j.videos.length) throw 0; render(j.videos); })
       .catch(function () { load(i + 1); });
+  }
+  load(0);
+})();
+</script>
+<script>
+(function () {
+  var wrap = document.getElementById('mkt-wrap'), list = document.getElementById('mkt');
+  var SOURCES = ['https://raw.githubusercontent.com/agemoory/retirement_planing/main/data/market.json', '/data/market.json'];
+  function n(v, d) { return Number(v).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d }); }
+  function hm(iso) {
+    var d = new Date(iso); if (isNaN(d)) return '';
+    var k = new Date(d.getTime() + (d.getTimezoneOffset() + 540) * 60000);
+    return (k.getMonth() + 1) + '.' + String(k.getDate()).padStart(2, '0') + ' ' + String(k.getHours()).padStart(2, '0') + ':' + String(k.getMinutes()).padStart(2, '0');
+  }
+  function render(j) {
+    var items = (j.items || []).filter(function (i) { return isFinite(i.price) && isFinite(i.change); });
+    if (!items.length) return;
+    var newest = items.reduce(function (m, i) { var t = Date.parse(i.time || ''); return t > m ? t : m; }, 0);
+    if (newest && Date.now() - newest > 7 * 864e5) return;   // 일주일 넘게 묵은 숫자는 숨김
+    list.innerHTML = items.map(function (i) {
+      var up = i.change > 0, dn = i.change < 0, cls = up ? 'up' : (dn ? 'dn' : 'eq'), arrow = up ? '▲' : (dn ? '▼' : '–');
+      var val, chg;
+      if (i.unit === 'krw') { val = n(i.price, 1) + '원'; chg = n(Math.abs(i.change), 1); }
+      else if (i.unit === 'pct') { val = n(i.price, 2) + '%'; chg = n(Math.abs(i.change), 2) + '%p'; }
+      else { val = n(i.price, 2); chg = n(Math.abs(i.pct), 2) + '%'; }
+      var sr = up ? '상승' : (dn ? '하락' : '보합');
+      return '<li title="' + (i.time ? hm(i.time) + ' 기준' : '') + '"><span class="mk-n">' + i.name + '</span><span class="mk-v">' + val + '</span>' +
+        '<span class="mk-c ' + cls + '"><span aria-hidden="true">' + arrow + '</span><span class="sr">' + sr + ' </span>' + chg + '</span></li>';
+    }).join('');
+    document.getElementById('mkt-time').textContent = (j.updated ? hm(j.updated) + ' 업데이트' : '') + ' · 전일 종가 대비';
+    wrap.hidden = false;
+  }
+  function load(k) {
+    if (k >= SOURCES.length) return;
+    fetch(SOURCES[k], { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(render).catch(function () { load(k + 1); });
   }
   load(0);
 })();
