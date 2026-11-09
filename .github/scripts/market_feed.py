@@ -50,6 +50,31 @@ def fetch(symbol):
     return None
 
 
+def fetch_fear_greed():
+    """CNN 공포·탐욕 지수 (비공식 데이터 — 막히거나 형식이 바뀌면 None)."""
+    url = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata"
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+        "Accept": "application/json",
+        "Referer": "https://edition.cnn.com/markets/fear-and-greed",
+        "Origin": "https://edition.cnn.com",
+    })
+    for attempt in range(1, 4):
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                fg = json.load(r)["fear_and_greed"]
+            score, prev = float(fg["score"]), float(fg.get("previous_close", fg["score"]))
+            ts = fg.get("timestamp")
+            t = datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(KST).isoformat() if ts else None
+            return {"id": "fg", "name": "공포·탐욕", "unit": "fg", "price": round(score, 1), "prev": round(prev, 1),
+                    "change": round(score - prev, 1), "pct": 0, "rating": fg.get("rating", ""), "time": t,
+                    "link": "https://edition.cnn.com/markets/fear-and-greed"}
+        except (urllib.error.URLError, KeyError, TypeError, ValueError) as e:
+            print(f"fear&greed attempt {attempt}: {e}")
+            time.sleep(5 * attempt)
+    return None
+
+
 old = {}
 if os.path.exists(OUT):
     try:
@@ -74,11 +99,17 @@ for iid, name, sym, unit in ITEMS:
     elif iid in old:
         items.append(old[iid])
 
+fgq = fetch_fear_greed()
+if fgq:
+    items.append(fgq)
+elif "fg" in old:
+    items.append(old["fg"])
+
 if got == 0:
     raise SystemExit("could not fetch any quote; keeping the previous file")
 
 os.makedirs("data", exist_ok=True)
 with open(OUT, "w", encoding="utf-8") as f:
-    json.dump({"updated": datetime.now(KST).isoformat(timespec="minutes"), "source": "Yahoo Finance", "items": items},
+    json.dump({"updated": datetime.now(KST).isoformat(timespec="minutes"), "source": "Yahoo Finance, CNN", "items": items},
               f, ensure_ascii=False, indent=1)
 print(f"saved {got}/{len(ITEMS)} quotes")

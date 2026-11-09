@@ -283,7 +283,7 @@
   function stamp(iso) {
     var k = kst(iso), now = kst(new Date().toISOString()); if (!k) return '';
     if (k.toDateString() === now.toDateString()) return String(k.getHours()).padStart(2, '0') + ':' + String(k.getMinutes()).padStart(2, '0');
-    return (k.getMonth() + 1) + '/' + k.getDate() + ' 마감';
+    return (k.getMonth() + 1) + '/' + k.getDate();
   }
   function render(j) {
     var items = (j.items || []).filter(function (i) { return isFinite(i.price) && isFinite(i.change); });
@@ -291,6 +291,13 @@
     var newest = items.reduce(function (m, i) { var t = Date.parse(i.time || ''); return t > m ? t : m; }, 0);
     if (newest && Date.now() - newest > 7 * 864e5) return;   // 일주일 넘게 묵은 숫자는 숨김
     list.innerHTML = items.map(function (i) {
+      if (i.unit === 'fg') {
+        var sc = Math.round(i.price);
+        var band = sc < 25 ? ['ef', '극단적 공포'] : sc < 45 ? ['f', '공포'] : sc <= 55 ? ['n', '중립'] : sc <= 75 ? ['g', '탐욕'] : ['eg', '극단적 탐욕'];
+        return '<li title="CNN Fear &amp; Greed Index · 전일 ' + Math.round(i.prev) + (i.time ? ' · ' + hm(i.time) + ' 기준' : '') + '">' +
+          '<a class="mk-n" href="' + (i.link || 'https://edition.cnn.com/markets/fear-and-greed') + '" target="_blank" rel="noopener">' + i.name + '</a>' +
+          '<span class="mk-v">' + sc + '</span><span class="mk-fg fg-' + band[0] + '">' + band[1] + '</span></li>';
+      }
       var up = i.change > 0, dn = i.change < 0, cls = up ? 'up' : (dn ? 'dn' : 'eq'), arrow = up ? '▲' : (dn ? '▼' : '–');
       var val, chg;
       if (i.unit === 'krw') { val = n(i.price, 1) + '원'; chg = n(Math.abs(i.change), 1); }
