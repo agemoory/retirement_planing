@@ -56,7 +56,6 @@
 <section class="mkt" id="mkt-wrap" aria-label="오늘의 시장 지표" hidden>
 <div class="wrap mkt-row">
 <ul class="mkt-list" id="mkt"></ul>
-<span class="mkt-time" id="mkt-time"></span>
 </div>
 </section>
 
@@ -272,12 +271,19 @@
 <script>
 (function () {
   var wrap = document.getElementById('mkt-wrap'), list = document.getElementById('mkt');
-  var SOURCES = ['https://raw.githubusercontent.com/agemoory/retirement_planing/main/data/market.json', '/data/market.json'];
+  var SOURCES = ['https://raw.githubusercontent.com/agemoory/retirement_planing/market-data/market.json', 'https://raw.githubusercontent.com/agemoory/retirement_planing/main/data/market.json', '/data/market.json'];
   function n(v, d) { return Number(v).toLocaleString('ko-KR', { minimumFractionDigits: d, maximumFractionDigits: d }); }
   function hm(iso) {
     var d = new Date(iso); if (isNaN(d)) return '';
     var k = new Date(d.getTime() + (d.getTimezoneOffset() + 540) * 60000);
     return (k.getMonth() + 1) + '.' + String(k.getDate()).padStart(2, '0') + ' ' + String(k.getHours()).padStart(2, '0') + ':' + String(k.getMinutes()).padStart(2, '0');
+  }
+  function kst(iso) { var d = new Date(iso); return isNaN(d) ? null : new Date(d.getTime() + (d.getTimezoneOffset() + 540) * 60000); }
+  // 오늘 시세면 'HH:MM', 아니면 'M.DD 마감'
+  function stamp(iso) {
+    var k = kst(iso), now = kst(new Date().toISOString()); if (!k) return '';
+    if (k.toDateString() === now.toDateString()) return String(k.getHours()).padStart(2, '0') + ':' + String(k.getMinutes()).padStart(2, '0');
+    return (k.getMonth() + 1) + '/' + k.getDate() + ' 마감';
   }
   function render(j) {
     var items = (j.items || []).filter(function (i) { return isFinite(i.price) && isFinite(i.change); });
@@ -291,10 +297,10 @@
       else if (i.unit === 'pct') { val = n(i.price, 2) + '%'; chg = n(Math.abs(i.change), 2) + '%p'; }
       else { val = n(i.price, 2); chg = n(Math.abs(i.pct), 2) + '%'; }
       var sr = up ? '상승' : (dn ? '하락' : '보합');
-      return '<li title="' + (i.time ? hm(i.time) + ' 기준' : '') + '"><span class="mk-n">' + i.name + '</span><span class="mk-v">' + val + '</span>' +
-        '<span class="mk-c ' + cls + '"><span aria-hidden="true">' + arrow + '</span><span class="sr">' + sr + ' </span>' + chg + '</span></li>';
+      return '<li title="' + (i.time ? hm(i.time) + ' 기준 · ' : '') + '전일 종가 대비 · 시세는 15~20분 늦을 수 있어요"><span class="mk-n">' + i.name + '</span><span class="mk-v">' + val + '</span>' +
+        '<span class="mk-c ' + cls + '"><span aria-hidden="true">' + arrow + '</span><span class="sr">' + sr + ' </span>' + chg + '</span>' +
+        (i.time ? '<span class="mk-t">' + stamp(i.time) + '</span>' : '') + '</li>';
     }).join('');
-    document.getElementById('mkt-time').textContent = (j.updated ? hm(j.updated) + ' 업데이트' : '') + ' · 전일 종가 대비';
     wrap.hidden = false;
   }
   function load(k) {

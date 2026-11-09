@@ -65,8 +65,8 @@ img{max-width:100%}
 /* market strip */
 .mkt{border-top:1px solid var(--border);background:var(--bg)}
 .mkt-row{display:flex;align-items:center;justify-content:space-between;gap:8px 28px;padding-top:12px;padding-bottom:12px}
-.mkt-list{display:flex;gap:6px 28px;margin:0;padding:0;list-style:none;flex-wrap:wrap}
-.mkt-list li{display:flex;align-items:baseline;gap:8px;white-space:nowrap;font-size:15px}
+.mkt-list{display:flex;gap:6px 22px;margin:0;padding:0;list-style:none;flex-wrap:wrap}
+.mkt-list li{display:flex;align-items:baseline;gap:6px;white-space:nowrap;font-size:15px}
 .mk-n{color:var(--text2);font-size:14px}
 .mk-v{font-weight:700;font-variant-numeric:tabular-nums}
 .mk-c{font-size:14px;font-weight:500;font-variant-numeric:tabular-nums}
@@ -74,12 +74,15 @@ img{max-width:100%}
 .mk-c span[aria-hidden]{font-size:11px;margin-right:2px}
 .mkt .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .mkt-time{font-size:12px;color:var(--text2);white-space:nowrap}
+.mk-t{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums}
 @media (max-width:640px){
   .mkt-row{flex-direction:column;align-items:stretch;gap:4px;padding-top:10px;padding-bottom:10px}
   .mkt-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px}
   .mkt-list li{font-size:14px;gap:5px}
   .mk-n{font-size:13px}.mk-c{font-size:13px}
   .mkt-time{font-size:11px}
+  .mk-t{font-size:11px}
+  .mkt-list li{display:grid;grid-template-columns:auto auto;justify-content:start;align-items:baseline;gap:0 6px}
 }
 
 /* cards */
