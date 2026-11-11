@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>배당주 원금회수 계산기 · josung.kr</title>
+<meta name="description" content="주가와 1년 배당금만 넣으면, 배당만으로 원금이 몇 년 만에 돌아오는지와 내 기준 적정가를 계산해 드려요. 배당할인모형(DDM) 기반.">
+<meta property="og:title" content="배당주, 원금은 몇 년 만에 돌아올까? · josung.kr">
+<meta property="og:description" content="주가와 배당금 두 숫자로 원금 회수 기간과 적정가를 바로 확인해 보세요.">
+<meta property="og:url" content="https://josung.kr/dividend/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://josung.kr/assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css?v=20261109">
+<style>
+.dv-hero{padding:56px 0 28px}
+.dv-hero h1{margin:12px 0 14px;font-family:var(--serif);font-size:40px;line-height:1.3;text-wrap:balance}
+.dv-hero .lead{margin:0;font-size:17px;color:var(--text2);max-width:36em}
+.wrap.dv{max-width:960px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px}
+.panel h2{margin:0 0 4px;font-family:var(--serif);font-size:22px;line-height:1.4}
+.panel .sub{margin:0 0 20px;font-size:15px;color:var(--text2)}
+.step{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;margin-right:8px;border-radius:50%;background:var(--accent-light);color:var(--accent-dark);font:700 14px var(--sans);vertical-align:3px}
+
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label{font-weight:500;font-size:15px}
+.fld .opt{font-weight:400;color:var(--text2);font-size:13px}
+.num{position:relative}
+.num input{width:100%;min-height:52px;padding:0 44px 0 14px;border:1px solid var(--border2);border-radius:10px;background:#fff;color:var(--text);font:500 19px var(--sans);text-align:right;font-variant-numeric:tabular-nums}
+.num input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.num input::placeholder{color:#B5ADA3;font-weight:400;font-size:16px}
+.num .u{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:15px;pointer-events:none}
+.fld .hint{margin:0;font-size:13px;color:var(--text2)}
+
+.q{margin:0 0 4px;font-weight:500;font-size:16px}
+.q-sub{margin:0 0 6px;font-size:14px;color:var(--text2)}
+.opt-block + .opt-block{margin-top:26px;padding-top:22px;border-top:1px dashed var(--border)}
+.chips span small{margin-left:4px;font-weight:400;font-size:12.5px;color:var(--text2)}
+.chips input:checked + span small{color:var(--accent-dark)}
+.custom{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 6px 0 14px;border-radius:999px;border:1px dashed var(--border2);background:#fff;font-size:14px;color:var(--text2)}
+.custom input{width:64px;min-height:34px;padding:0 6px;border:0;border-bottom:1px solid var(--border2);background:transparent;color:var(--text);font:500 16px var(--sans);text-align:right;font-variant-numeric:tabular-nums}
+.custom input:focus{outline:none;border-bottom-color:var(--accent)}
+.custom.on{border-style:solid;border-color:var(--accent);background:var(--accent-light);color:var(--accent-dark)}
+
+/* 결과 */
+.res-empty{padding:28px;text-align:center;color:var(--text2);background:var(--bg);border-radius:12px}
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.card2{padding:20px 22px;border-radius:14px;border:1px solid var(--border);background:var(--bg);min-width:0}
+.card2.me{background:var(--accent-light);border-color:#C9E0D3}
+.card2 .lbl{display:block;font-size:15px;color:var(--text2)}
+.card2 .val{display:block;font-size:32px;font-weight:700;line-height:1.35;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.card2 .val small{font-size:17px;font-weight:500;margin-left:2px}
+.card2 .note{display:block;font-size:14px;color:var(--text2)}
+.card2 .note b{color:var(--text)}
+.pill{display:inline-block;margin-top:6px;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:700}
+.pill.hi{background:#FBEDEB;color:#B32B23}
+.pill.lo{background:#EAF1FB;color:#2160C4}
+.pill.eq{background:var(--surface2);color:var(--text2)}
+
+.say{margin:18px 0 0;padding:16px 18px;border-radius:12px;background:var(--bg);border:1px solid var(--border);font-size:15.5px;color:var(--text-body)}
+.say p{margin:0}
+.say p + p{margin-top:6px}
+.say b{color:var(--text);font-variant-numeric:tabular-nums}
+
+.chart{margin-top:26px}
+.chart h3,.pay h3,.sens h3{margin:0 0 4px;font-size:17px}
+.chart .cap{margin:0 0 10px;font-size:14px;color:var(--text2)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0 0 8px;padding:0;list-style:none;font-size:13.5px;color:var(--text-body)}
+.legend li{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px}
+.legend i.dash{height:0;border-top:2px dashed currentColor;background:none!important}
+.chart-box{width:100%;overflow:hidden}
+.chart-box svg{display:block;width:100%;height:auto}
+.chart-box text{font-family:var(--sans);font-variant-numeric:tabular-nums;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+
+.pay{margin-top:26px}
+.pay-tbl,.sens-tbl{width:100%;border-collapse:collapse;font-size:15px;font-variant-numeric:tabular-nums}
+.pay-tbl th,.pay-tbl td,.sens-tbl th,.sens-tbl td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:right}
+.pay-tbl th:first-child,.pay-tbl td:first-child,.sens-tbl th:first-child,.sens-tbl td:first-child{text-align:left}
+.pay-tbl thead th,.sens-tbl thead th{font-weight:500;font-size:13.5px;color:var(--text2);background:var(--surface2)}
+.pay-tbl td small{display:block;font-size:12.5px;color:var(--text2)}
+.pay-tbl td.never{color:var(--danger);font-weight:500}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+.sens{margin-top:26px}
+.sens .cap{margin:0 0 10px;font-size:14px;color:var(--text2)}
+.sens-tbl td,.pay-tbl td{white-space:nowrap}
+.sens-tbl tr.sel td{background:var(--accent-light);font-weight:700}
+.sens-tbl td.hi{color:#B32B23}
+.sens-tbl td.lo{color:#2160C4}
+
+details.calc{margin-top:22px}
+details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:6px 0}
+.calc-box{margin-top:8px;padding:18px 20px;border-radius:12px;background:var(--bg);border:1px solid var(--border);font-size:15px;color:var(--text-body)}
+.calc-box dl{margin:0;display:grid;gap:14px}
+.calc-box dt{font-weight:700;color:var(--text)}
+.calc-box dd{margin:2px 0 0}
+.calc-box code{font-family:var(--sans);font-weight:500;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1px 7px;white-space:nowrap}
+
+.disc{margin-top:24px;padding:20px;border-radius:14px;background:#FFF9C7;border:1px solid #F2E27A}
+.disc p{margin:0;color:#3A3420}
+.disc p + p{margin-top:6px;font-size:14px}
+.disc .btns{margin-top:14px}
+
+@media (max-width:640px){
+  .dv-hero{padding:40px 0 20px}
+  .dv-hero h1{font-size:30px}
+  .panel{padding:20px 16px}
+  .wrap.dv{padding:0 16px}
+  .card2 .val{font-size:28px}
+  .pay-tbl,.sens-tbl{font-size:14px}
+  .pay-tbl th,.pay-tbl td,.sens-tbl th,.sens-tbl td{padding:9px 8px}
+}
+@media (prefers-reduced-motion:no-preference){.card2 .val{transition:color .2s}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+<div class="wrap">
+<a class="brand" href="/"><b>조성</b><span>josung.kr</span></a>
+<nav class="nav" aria-label="주 메뉴">
+<a href="/host/">Host</a>
+<a href="/#tools">계산기</a>
+<a href="/silson/">실손</a>
+<a href="/coverage/">보장분석</a>
+<a href="/#suremate">슈어메이트</a>
+<a href="/#contents">콘텐츠</a>
+<a href="/apply/">신청</a>
+</nav>
+</div>
+</header>
+
+<main>
+<section class="dv-hero">
+<div class="wrap dv">
+<p class="eyebrow">누구나 쓰는 계산기</p>
+<h1>배당주, 원금은 몇 년 만에 돌아올까?</h1>
+<p class="lead">주가와 1년 배당금만 넣으면, 배당만으로 원금이 돌아오는 기간과 내 기준 적정가가 나와요. 예시 숫자를 내 종목으로 바꿔 보세요.</p>
+</div>
+</section>
+
+<div class="wrap dv">
+
+<!-- 1. 숫자 -->
+<section class="panel" aria-labelledby="h-in">
+<h2 id="h-in"><span class="step">1</span>종목 숫자 넣기</h2>
+<p class="sub">증권사 앱의 현재가와 ‘주당 배당금’을 그대로 옮겨 적으면 돼요.</p>
+<div class="fields">
+<div class="fld">
+<label for="in-p">지금 주가</label>
+<div class="num"><input id="in-p" type="text" inputmode="numeric" autocomplete="off" maxlength="13" value="144,100"><span class="u">원</span></div>
+</div>
+<div class="fld">
+<label for="in-d">1주당 1년 배당금</label>
+<div class="num"><input id="in-d" type="text" inputmode="numeric" autocomplete="off" maxlength="13" value="10,000"><span class="u">원</span></div>
+<p class="hint">분기배당이면 4번 받는 돈을 더해서 넣어 주세요.</p>
+</div>
+<div class="fld">
+<label for="in-b">내 평균 매수가 <span class="opt">(선택)</span></label>
+<div class="num"><input id="in-b" type="text" inputmode="numeric" autocomplete="off" maxlength="13" placeholder="갖고 있다면"><span class="u">원</span></div>
+<p class="hint">넣으면 내 매수가 기준으로도 계산해요.</p>
+</div>
+</div>
+</section>
+
+<!-- 2. 기준 -->
+<section class="panel" aria-labelledby="h-opt">
+<h2 id="h-opt"><span class="step">2</span>내 기준 정하기</h2>
+<p class="sub">같은 배당이라도 얼마를 기대하느냐에 따라 적정가가 달라져요.</p>
+
+<div class="opt-block">
+<p class="q" id="q-r">이 주식에서 1년에 몇 %는 벌어야 할까요?</p>
+<p class="q-sub">요구수익률(할인율)이에요. 예금·국채보다 위험한 만큼 더 높게 잡는 게 보통이에요.</p>
+<div class="chips" role="radiogroup" aria-labelledby="q-r" id="chips-r"></div>
+</div>
+
+<div class="opt-block">
+<p class="q" id="q-g">배당은 앞으로 매년 얼마나 늘어날까요?</p>
+<p class="q-sub">회사가 약속한 배당 정책을 보고 골라 보세요. 모르겠으면 ‘그대로’가 가장 보수적이에요.</p>
+<div class="chips" role="radiogroup" aria-labelledby="q-g" id="chips-g"></div>
+</div>
+
+<div class="opt-block">
+<p class="q" id="q-t">회수 기간은 세금을 떼고 볼까요?</p>
+<div class="chips" role="radiogroup" aria-labelledby="q-t">
+<label><input type="radio" name="tax" value="0" id="tax-0" checked><span>세전</span></label>
+<label><input type="radio" name="tax" value="1" id="tax-1"><span>세후 <small>배당소득세 15.4%</small></span></label>
+</div>
+</div>
+</section>
+
+<!-- 결과 -->
+<section class="panel" aria-labelledby="h-res" aria-live="polite">
+<h2 id="h-res">계산 결과</h2>
+<p class="sub">배당이 끊기지 않는다는 가정의 계산이에요. 아래 안내를 꼭 함께 봐 주세요.</p>
+<div id="result"><div class="res-empty">주가와 배당금을 넣으면 결과가 나와요.</div></div>
+
+<div class="disc">
+<p><b>투자 권유가 아닌 계산 도구예요.</b> 배당은 회사의 이익과 이사회 결정에 따라 줄거나 끊길 수 있고, 주가는 배당과 상관없이 오르내려요. 이 계산은 주가 변동, 매매 수수료, 배당 재투자를 넣지 않았어요.</p>
+<p>세후 계산은 배당소득세 15.4% 원천징수 기준이에요. 연간 금융소득이 2천만 원을 넘으면 종합과세로 세금이 더 나올 수 있고, ISA·연금계좌에서는 과세 방식이 달라요.</p>
+</div>
+<p class="muted" style="margin:16px 0 0;font-size:13px">입력한 숫자는 이 브라우저 안에서만 계산되고 어디에도 저장·전송되지 않아요.</p>
+</section>
+
+</div>
+</main>
+
+<a class="kakao-fab" href="https://pf.kakao.com/_ewmWX/chat" target="_blank" rel="noopener" aria-label="카카오톡으로 바로 채팅하기"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.5c-5 0-9 3.1-9 7 0 2.5 1.7 4.7 4.2 5.9l-.9 3.4c-.1.3.3.6.6.4l4-2.6h1.1c5 0 9-3.1 9-7s-4-7.1-9-7.1z"/></svg><span>카톡 상담</span></a>
+
+<footer class="site-footer">
+<div class="wrap">
+<p class="bye">즐겁게 놀다 가셨길. 또 오세요.</p>
+<div class="legal">
+<span>별재무설계 · 대표 조성 · 사업자등록번호 142-09-64413</span>
+<span><a href="/privacy/">개인정보처리방침</a></span>
+</div>
+</div>
+</footer>
+
+<script>
+(function () {
+  var TAX = 0.154;
+  var R_OPTS = [{ v: 4, s: '국채 수준' }, { v: 5 }, { v: 6 }, { v: 7 }, { v: 8 }, { v: 10 }];
+  var G_OPTS = [{ v: 0, s: '그대로' }, { v: 1 }, { v: 2 }, { v: 3 }, { v: 5 }];
+  var state = { r: 7, g: 0, tax: false };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var inP = $('in-p'), inD = $('in-d'), inB = $('in-b'), box = $('result');
+
+  /* ---------- 숫자 도우미 ---------- */
+  function parse(el) { var n = Number(String(el.value).replace(/[^\d]/g, '')); return isFinite(n) ? n : 0; }
+  function won(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
+  function pct(n, d) { return (n * 100).toLocaleString('ko-KR', { minimumFractionDigits: d == null ? 2 : d, maximumFractionDigits: d == null ? 2 : d }) + '%'; }
+  function yrs(n) { return n < 100 ? n.toLocaleString('ko-KR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '년' : Math.round(n) + '년'; }
+  function short(n) {
+    if (n >= 1e8) return +(n / 1e8).toFixed(1) + '억';
+    if (n >= 1e4) return +(n / 1e4).toFixed(1) + '만';
+    if (n >= 1e3) return +(n / 1e3).toFixed(1) + '천';
+    return Math.round(n).toLocaleString('ko-KR');
+  }
+  function fmtInput(el) {
+    var raw = String(el.value).replace(/[^\d]/g, '').replace(/^0+(?=\d)/, '');
+    el.value = raw ? Number(raw).toLocaleString('ko-KR') : '';
+  }
+
+  /* ---------- 칩 만들기 ---------- */
+  function buildChips(boxId, name, opts, key, unitLabel) {
+    var wrap = $(boxId), h = '', def = state[key];
+    opts.forEach(function (o) {
+      var id = name + '-' + String(o.v).replace('.', '_');
+      h += '<label><input type="radio" name="' + name + '" id="' + id + '" value="' + o.v + '"' + (o.v === state[key] ? ' checked' : '') + '><span>' + o.v + '%' + (o.s ? '<small>' + o.s + '</small>' : '') + '</span></label>';
+    });
+    h += '<span class="custom" id="' + name + '-cw"><label for="' + name + '-c">' + unitLabel + '</label><input id="' + name + '-c" type="number" inputmode="decimal" step="0.1" min="0" max="30" placeholder="직접">%</span>';
+    wrap.innerHTML = h;
+    var custom = $(name + '-c'), cw = $(name + '-cw');
+    wrap.addEventListener('change', function (e) {
+      if (e.target.name !== name) return;
+      state[key] = def = Number(e.target.value); custom.value = ''; cw.classList.remove('on'); render();
+    });
+    custom.addEventListener('input', function () {
+      var v = parseFloat(custom.value);
+      if (!isFinite(v) || v < 0) {
+        if (cw.classList.contains('on')) {             // 직접 입력을 지우면 기본값으로 되돌림
+          cw.classList.remove('on'); state[key] = def;
+          var d = wrap.querySelector('input[type=radio][value="' + def + '"]'); if (d) d.checked = true;
+          render();
+        }
+        return;
+      }
+      state[key] = Math.min(v, 30);
+      Array.prototype.forEach.call(wrap.querySelectorAll('input[type=radio]'), function (r) { r.checked = false; });
+      cw.classList.add('on'); render();
+    });
+  }
+  buildChips('chips-r', 'r', R_OPTS, 'r', '직접');
+  buildChips('chips-g', 'g', G_OPTS, 'g', '직접');
+  document.querySelectorAll('input[name=tax]').forEach(function (el) {
+    el.addEventListener('change', function () { state.tax = el.value === '1'; render(); });
+  });
+  [inP, inD, inB].forEach(function (el) { el.addEventListener('input', function () { fmtInput(el); render(); }); });
+
+  /* ---------- 계산 ----------
+     배당할인모형(DDM): 1년 뒤부터 매년 D, D(1+g), D(1+g)^2 … 를 받는다고 보고
+     적정가 = D ÷ (r − g)   (g = 0이면 D ÷ r, 제로성장 모형)
+     지금 주가에 담긴 기대수익률(내재 할인율) = D ÷ P + g                        */
+  var CAP = 300;
+  function payback(P, D, g, r) {
+    // 단순 회수: 받은 배당 합계가 P에 닿는 해 / 할인 회수: 배당의 현재가치 합계가 P에 닿는 해
+    var s = 0, pv = 0, simple = null, disc = null, d, dv;
+    var discLimit = r > g ? D / (r - g) : Infinity;
+    for (var t = 1; t <= CAP && (simple === null || (disc === null && discLimit >= P)); t++) {
+      d = D * Math.pow(1 + g, t - 1);
+      if (simple === null) { if (s + d >= P) simple = t - 1 + (P - s) / d; s += d; }
+      dv = d / Math.pow(1 + r, t);
+      if (disc === null && discLimit >= P) { if (pv + dv >= P) disc = t - 1 + (P - pv) / dv; pv += dv; }
+    }
+    return { simple: simple, disc: disc, never: discLimit < P, limit: discLimit };
+  }
+  function series(D, g, r, N) {
+    var a = [{ t: 0, s: 0, pv: 0 }], s = 0, pv = 0;
+    for (var t = 1; t <= N; t++) { var d = D * Math.pow(1 + g, t - 1); s += d; pv += d / Math.pow(1 + r, t); a.push({ t: t, s: s, pv: pv }); }
+    return a;
+  }
+
+  /* ---------- 차트 ---------- */
+  function niceStep(max, n) {
+    var raw = max / n, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+    return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p;
+  }
+  function chart(o) {
+    var narrow = (box.clientWidth || 640) < 520;
+    var W = narrow ? 380 : 640, H = narrow ? 260 : 300, L = narrow ? 40 : 52, R = 8, T = 14, B = 30;
+    var iw = W - L - R, ih = H - T - B;
+    var top = Math.max(o.P, o.B || 0) * 1.45;
+    var ys = niceStep(top, 4); top = Math.ceil(top / ys) * ys;
+    var xs = o.N <= 20 ? 5 : o.N <= 40 ? 10 : 10;
+    function X(t) { return L + t / o.N * iw; }
+    function Y(v) { return T + ih - Math.min(v, top * 3) / top * ih; }   // 위로 넘치는 선은 clipPath가 자름
+    var g = '';
+    for (var v = 0; v <= top + 1e-6; v += ys) {
+      g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '" stroke="#E2DDD6" stroke-width="1"/>';
+      g += '<text x="' + (L - 8) + '" y="' + (Y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="12" fill="#5C554D">' + short(v) + '</text>';
+    }
+    for (var t = 0; t <= o.N; t += xs) {
+      g += '<text x="' + X(t).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="' + (t === o.N ? 'end' : 'middle') + '" font-size="12" fill="#5C554D">' + t + (t === 0 ? '' : '년') + '</text>';
+    }
+    function path(key) {
+      var d = '';
+      o.data.forEach(function (p, i) { d += (i ? 'L' : 'M') + X(p.t).toFixed(1) + ' ' + Y(p[key]).toFixed(1); });
+      return d;
+    }
+    var clip = '<clipPath id="cp"><rect x="' + L + '" y="' + T + '" width="' + iw + '" height="' + ih + '"/></clipPath>';
+    var lines = '';
+    // 기준선: 주가 / 매수가
+    lines += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(o.P).toFixed(1) + '" y2="' + Y(o.P).toFixed(1) + '" stroke="#1A1714" stroke-width="1.5" stroke-dasharray="5 4"/>';
+    if (o.B) lines += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(o.B).toFixed(1) + '" y2="' + Y(o.B).toFixed(1) + '" stroke="#A33A2A" stroke-width="1.5" stroke-dasharray="2 4"/>';
+    lines += '<g clip-path="url(#cp)">';
+    lines += '<path d="' + path('s') + 'L' + X(o.N) + ' ' + Y(0) + 'L' + X(0) + ' ' + Y(0) + 'Z" fill="#1A6B4A" fill-opacity=".07"/>';
+    lines += '<path d="' + path('s') + '" fill="none" stroke="#1A6B4A" stroke-width="2.5" stroke-linejoin="round"/>';
+    lines += '<path d="' + path('pv') + '" fill="none" stroke="#2160C4" stroke-width="2.5" stroke-linejoin="round"/>';
+    lines += '</g>';
+
+    /* 이름표 자리 잡기: 이미 놓인 이름표·점과 겹치지 않는 첫 자리를 고름 */
+    var placed = [];
+    function tw(str) { var w = 0; for (var i = 0; i < str.length; i++) w += str.charCodeAt(i) < 128 ? 7 : 12; return w; }
+    function hit(a) { return placed.some(function (b) { return a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2; }); }
+    function label(str, xs, ys, color, bold) {
+      var w = tw(str), best = null;
+      for (var i = 0; i < xs.length && !best; i++) for (var j = 0; j < ys.length && !best; j++) {
+        var x = xs[i][0], an = xs[i][1], y = ys[j];
+        var x1 = an === 'end' ? x - w : an === 'middle' ? x - w / 2 : x;
+        var r = { x1: x1 - 2, x2: x1 + w + 2, y1: y - 12, y2: y + 3, x: x, an: an, y: y };
+        if (r.y1 >= 0 && r.y2 <= T + ih + 2 && !hit(r)) best = r;
+      }
+      if (!best) { var x0 = xs[0][0], a0 = xs[0][1], y0 = ys[0], l0 = a0 === 'end' ? x0 - w : a0 === 'middle' ? x0 - w / 2 : x0; best = { x1: l0, x2: l0 + w, y1: y0 - 12, y2: y0 + 3, x: x0, an: a0, y: y0 }; }
+      placed.push(best);
+      return '<text x="' + best.x.toFixed(1) + '" y="' + best.y.toFixed(1) + '" text-anchor="' + best.an + '" font-size="12"' + (bold ? ' font-weight="700"' : '') + ' fill="' + color + '">' + str + '</text>';
+    }
+    function dotAt(t, v) { return t != null && t <= o.N ? { x: X(t), y: Y(v) } : null; }
+    var dots = [
+      { t: o.pb.simple, v: o.P, c: '#1A6B4A', up: false },
+      { t: o.pb.disc, v: o.P, c: '#2160C4', up: true },
+      { t: o.B && o.pbB ? o.pbB.simple : null, v: o.B, c: '#A33A2A', up: o.B > o.P }
+    ];
+    // 점 자리를 먼저 막아 두고
+    dots.forEach(function (d) { var q = dotAt(d.t, d.v); d.q = q; if (q) placed.push({ x1: q.x - 6, x2: q.x + 6, y1: q.y - 6, y2: q.y + 6 }); });
+    var marks = '';
+    // 기준선 이름표: 왼쪽 위 → 왼쪽 아래 → 오른쪽 위 → 오른쪽 아래
+    function lineLabel(str, v, color) {
+      var y = Y(v);
+      return label(str, [[L + 6, 'start'], [W - R - 4, 'end']], [y - 6, y + 16], color, true);
+    }
+    marks += lineLabel('지금 주가 ' + short(o.P), o.P, '#1A1714');
+    if (o.B) marks += lineLabel('내 매수가 ' + short(o.B), o.B, '#A33A2A');
+    // 회수 지점 점과 이름표
+    dots.forEach(function (d) {
+      if (!d.q) return;
+      var x = d.q.x, y = d.q.y, an = x > W - 40 ? 'end' : x < L + 30 ? 'start' : 'middle';
+      var ys = d.up ? [y - 10, y + 20, y - 24, y + 34] : [y + 20, y - 10, y + 34, y - 24];
+      marks += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="5" fill="' + d.c + '" stroke="#fff" stroke-width="2"/>';
+      marks += label(yrs(d.t), [[x, an], [x - 8, 'end'], [x + 8, 'start']], ys, d.c, true);
+    });
+    // 현재가치가 주가에 못 미치고 멈추는 경우
+    if (o.pb.never) {
+      var last = o.data[o.data.length - 1], py = Y(last.pv);
+      marks += label('아무리 받아도 ' + short(o.pb.limit) + '에서 멈춤', [[W - R - 4, 'end']], [py + 16, py - 8, py + 30], '#2160C4', false);
+    }
+    lines += marks;
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="연도별 누적 배당과 주가 비교 그래프"><defs>' + clip + '</defs>' + g + lines + '</svg>';
+  }
+
+  /* ---------- 그리기 ---------- */
+  function render() {
+    var P = parse(inP), D = parse(inD), Bp = parse(inB);
+    var r = state.r / 100, g = state.g / 100;
+    if (!P || !D) { box.innerHTML = '<div class="res-empty">주가와 1년 배당금을 넣으면 결과가 나와요.</div>'; return; }
+    var Dn = state.tax ? D * (1 - TAX) : D;             // 회수 계산용 배당
+    var yieldP = D / P, implied = D / P + g;
+    var ok = r > g, fair = ok ? D / (r - g) : null;
+    var pbP = payback(P, Dn, g, r), pbB = Bp ? payback(Bp, Dn, g, r) : null;
+
+    function gap(price) {
+      if (!ok) return '';
+      var x = price / fair - 1;
+      if (Math.abs(x) < 0.005) return '<span class="pill eq">적정가 수준</span>';
+      return x > 0 ? '<span class="pill hi">적정가보다 ' + pct(x, 1) + ' 비싸요</span>' : '<span class="pill lo">적정가보다 ' + pct(-x, 1) + ' 싸요</span>';
+    }
+
+    var h = '<div class="big">';
+    h += '<div class="card2"><span class="lbl">배당수익률</span><span class="val">' + pct(yieldP) + '</span><span class="note">세후 ' + pct(yieldP * (1 - TAX)) + (Bp ? ' · 내 매수가 기준 <b>' + pct(D / Bp) + '</b>' : '') + '</span></div>';
+    h += '<div class="card2 me"><span class="lbl">배당만으로 원금 회수</span><span class="val">' + (pbP.simple === null ? CAP + '년+' : yrs(pbP.simple).replace('년', '<small>년</small>')) + '</span><span class="note">' + (state.tax ? '세후' : '세전') + ' · 할인 없이 단순 합산' + (pbB && pbB.simple !== null ? ' · 내 매수가 <b>' + yrs(pbB.simple) + '</b>' : '') + '</span></div>';
+    h += '<div class="card2"><span class="lbl">요구수익률 ' + state.r + '% 기준 적정가</span>';
+    if (ok) h += '<span class="val">' + Math.round(fair).toLocaleString('ko-KR') + '<small>원</small></span>' + gap(P);
+    else h += '<span class="val" style="font-size:20px">계산할 수 없어요</span><span class="note">요구수익률이 배당 성장률보다 커야 적정가가 나와요.</span>';
+    h += '</div></div>';
+
+    // 해석 문장
+    h += '<div class="say"><p>지금 주가 <b>' + won(P) + '</b>은, 배당이 ' + (g ? '매년 <b>' + state.g + '%</b>씩 늘어난다' : '<b>지금 그대로</b> 유지된다') + '고 보면 <b>연 ' + pct(implied) + '</b>를 기대하는 가격이에요.</p>';
+    if (Bp) h += '<p>내 매수가 <b>' + won(Bp) + '</b>은 같은 가정에서 <b>연 ' + pct(D / Bp + g) + '</b>를 기대한 가격이었어요.</p>';
+    if (ok) h += '<p>연 ' + state.r + '%를 원한다면 ' + (P > fair * 1.005 ? '<b>' + won(fair) + '</b> 이하에서 사야 그 수익률이 나와요.' : '지금 가격에서 그 수익률을 기대할 수 있어요.') + '</p>';
+    h += '</div>';
+
+    // 차트
+    var horizon = Math.max(pbP.simple || 0, pbB && pbB.simple || 0);
+    var N = Math.min(60, Math.max(15, Math.ceil(horizon * 1.25 / 5) * 5));
+    if (pbP.disc !== null && pbP.disc < 60) N = Math.max(N, Math.min(60, Math.ceil(pbP.disc * 1.1 / 5) * 5));
+    h += '<div class="chart"><h3>해마다 쌓이는 배당</h3><p class="cap">초록 선이 주가 선을 넘는 해에 원금이 돌아와요. 파란 선은 미래에 받을 배당을 요구수익률 ' + state.r + '%로 깎아 지금 가치로 바꾼 거예요.</p>';
+    h += '<ul class="legend"><li><i style="background:#1A6B4A"></i>받은 배당 합계</li><li><i style="background:#2160C4"></i>지금 가치로 환산 (할인 ' + state.r + '%)</li><li style="color:#1A1714"><i class="dash"></i>지금 주가</li>' + (Bp ? '<li style="color:#A33A2A"><i class="dash"></i>내 매수가</li>' : '') + '</ul>';
+    h += '<div class="chart-box">' + chart({ P: P, B: Bp, N: N, data: series(Dn, g, r, N), pb: pbP, pbB: pbB }) + '</div>';
+    if (pbP.simple === null || pbP.simple > N || (pbB && (pbB.simple === null || pbB.simple > N))) h += '<p class="muted" style="margin:6px 0 0;font-size:13.5px">원금이 돌아오는 시점이 그래프 범위(' + N + '년)보다 멀어서 점이 보이지 않아요.</p>';
+    h += '</div>';
+
+    // 회수 기간 표
+    function cell(v, never) { return never ? '<td class="never">회수 안 됨<small>영원히 받아도 못 미쳐요</small></td>' : '<td>' + (v === null ? CAP + '년+' : yrs(v)) + '</td>'; }
+    h += '<div class="pay"><h3>원금 회수 기간 <span class="muted" style="font-weight:400;font-size:14px">' + (state.tax ? '세후' : '세전') + '</span></h3><div class="tbl-wrap"><table class="pay-tbl"><thead><tr><th>기준 가격</th><th>단순 회수</th><th>할인 회수 (' + state.r + '%)</th></tr></thead><tbody>';
+    h += '<tr><td>지금 주가<small>' + won(P) + '</small></td>' + cell(pbP.simple) + cell(pbP.disc, pbP.never) + '</tr>';
+    if (pbB) h += '<tr><td>내 매수가<small>' + won(Bp) + '</small></td>' + cell(pbB.simple) + cell(pbB.disc, pbB.never) + '</tr>';
+    h += '</tbody></table></div>';
+    h += '<p class="muted" style="margin:8px 0 0;font-size:13.5px">할인 회수는 ‘연 ' + state.r + '%를 벌면서’ 원금을 되찾는 데 걸리는 시간이에요. ' + (pbP.never || (pbB && pbB.never) ? '‘회수 안 됨’은 그 가격이 ' + state.r + '% 기준 적정가보다 비싸서, 배당만으로는 그 수익률을 채우지 못한다는 뜻이에요.' : '') + '</p></div>';
+
+    // 요구수익률별 적정가
+    var rs = [4, 5, 6, 7, 8, 9, 10];
+    if (rs.indexOf(state.r) < 0) { rs.push(state.r); rs.sort(function (a, b) { return a - b; }); }
+    h += '<div class="sens"><h3>요구수익률별 적정가</h3><p class="cap">배당 ' + won(D) + (g ? ', 매년 ' + state.g + '% 성장' : ', 성장 없음') + ' 기준 · 세전</p><div class="tbl-wrap"><table class="sens-tbl"><thead><tr><th>요구수익률</th><th>적정가</th><th>지금 주가는</th>' + (Bp ? '<th>내 매수가는</th>' : '') + '</tr></thead><tbody>';
+    rs.forEach(function (k) {
+      var rr = k / 100, f = rr > g ? D / (rr - g) : null;
+      function d(price) {
+        if (!f) return '<td>–</td>';
+        var x = price / f - 1;
+        if (Math.abs(x) < 0.005) return '<td>적정</td>';
+        return '<td class="' + (x > 0 ? 'hi' : 'lo') + '">' + (x > 0 ? pct(x, 0) + ' 비쌈' : pct(-x, 0) + ' 쌈') + '</td>';
+      }
+      h += '<tr' + (k === state.r ? ' class="sel"' : '') + '><td>' + k + '%</td><td>' + (f ? won(f) : '계산 불가') + '</td>' + d(P) + (Bp ? d(Bp) : '') + '</tr>';
+    });
+    h += '</tbody></table></div></div>';
+
+    // 계산 과정
+    h += '<details class="calc"><summary>어떻게 계산했나요?</summary><div class="calc-box"><dl>';
+    h += '<dt>적정가 · 배당할인모형(DDM)</dt><dd>앞으로 받을 배당을 모두 지금 가치로 바꿔 더한 값이에요. 배당이 그대로면 <code>배당 ÷ 요구수익률</code>(제로성장 모형), 매년 늘어나면 <code>배당 ÷ (요구수익률 − 성장률)</code>(고든 성장모형)이에요. 지금은 ' + won(D) + (ok ? ' ÷ (' + state.r + '% − ' + state.g + '%) = ' + won(fair) : '이고, 요구수익률이 성장률보다 작아 계산되지 않아요') + '.</dd>';
+    h += '<dt>주가에 담긴 기대수익률 · 내재 할인율</dt><dd>지금 주가를 적정가라고 보고 거꾸로 푼 요구수익률이에요. <code>배당 ÷ 주가 + 성장률</code> = ' + pct(yieldP) + ' + ' + state.g + '% = ' + pct(implied) + '.</dd>';
+    h += '<dt>단순 회수 기간 · 주가배당비율(P/D)</dt><dd>배당이 그대로면 <code>주가 ÷ 배당</code>, 배당수익률의 역수예요. 이익 대신 배당으로 본 PER이라고 생각하면 쉬워요. 성장률을 넣으면 해마다 늘어난 배당을 차례로 더해 계산해요.</dd>';
+    h += '<dt>할인 회수 기간</dt><dd>각 해의 배당을 <code>(1 + 요구수익률)^연수</code>로 나눠 지금 가치로 바꾼 뒤 더해요. 주가가 적정가보다 비싸면 이 합계가 주가에 영원히 닿지 않아요.</dd>';
+    h += '</dl></div></details>';
+
+    box.innerHTML = h;
+  }
+  var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(render, 150); });
+  render();
+})();
+</script>
+<script data-goatcounter="https://josung.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
