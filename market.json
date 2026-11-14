@@ -1,0 +1,58 @@
+{
+ "updated": "2026-11-14T21:50+09:00",
+ "source": "Yahoo Finance, CNN",
+ "items": [
+  {
+   "id": "kospi",
+   "name": "코스피",
+   "unit": "pt",
+   "price": 5290.53,
+   "prev": 5342.73,
+   "change": -52.2,
+   "pct": -0.98,
+   "time": "2026-11-13T20:05:40+09:00"
+  },
+  {
+   "id": "nasdaq",
+   "name": "나스닥",
+   "unit": "pt",
+   "price": 25136.273,
+   "prev": 25366.0898,
+   "change": -229.8168,
+   "pct": -0.91,
+   "time": "2026-11-14T07:15:59+09:00"
+  },
+  {
+   "id": "usdkrw",
+   "name": "원/달러",
+   "unit": "krw",
+   "price": 1336.2,
+   "prev": 1333.78,
+   "change": 2.42,
+   "pct": 0.18,
+   "time": "2026-11-14T12:30:48+09:00"
+  },
+  {
+   "id": "us10y",
+   "name": "미 10년물",
+   "unit": "pct",
+   "price": 5.154,
+   "prev": 5.103,
+   "change": 0.051,
+   "pct": 1.0,
+   "time": "2026-11-14T04:59:54+09:00"
+  },
+  {
+   "id": "fg",
+   "name": "공포·탐욕",
+   "unit": "fg",
+   "price": 38.6,
+   "prev": 39.8,
+   "change": -1.2,
+   "pct": 0,
+   "rating": "fear",
+   "time": "2026-11-14T08:59:56+09:00",
+   "link": "https://edition.cnn.com/markets/fear-and-greed"
+  }
+ ]
+}
