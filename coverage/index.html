@@ -302,16 +302,21 @@
     { cat: 2, id: 'tCn', name: '비급여암치료(연간)', short: '비급여암치료', std: 1000, inc: ['tCi'] },
     { cat: 2, id: 'tCt', name: '비급여암특정치료(연간)', short: '비급여특정', std: 2000, inc: ['tCi', 'tCn'] },
 
-    { cat: 3, id: 'bHem', name: '뇌출혈', short: '뇌출혈', std: 3000, inc: ['bStr', 'bCvd', 'bAll'] },
-    { cat: 3, id: 'bStr', name: '뇌졸중', short: '뇌졸중', std: 3000, inc: ['bCvd', 'bAll'] },
-    { cat: 3, id: 'bCvd', name: '뇌혈관질환', short: '뇌혈관', std: 2000, inc: ['bAll'] },
+    { cat: 3, id: 'bHem', name: '뇌출혈', short: '뇌출혈', std: 3000, inc: ['bStr', 'bCvd', 'bAll', 'cvDx'] },
+    { cat: 3, id: 'bStr', name: '뇌졸중', short: '뇌졸중', std: 3000, inc: ['bCvd', 'bAll', 'cvDx'] },
+    { cat: 3, id: 'bCvd', name: '뇌혈관질환', short: '뇌혈관', std: 2000, inc: ['bAll', 'cvDx'] },
     { cat: 3, id: 'bAll', name: '통합뇌관련질환', short: '통합뇌', std: 1000 },
-    { cat: 3, id: 'tB', name: '뇌혈관치료(연간)', short: '뇌혈관치료', std: 1000 },
+    // 순환계·혈관질환: 뇌·심장 모두 보장 → 여기서 한 번 입력하면 심장 섹션에 자동 연동
+    { cat: 3, id: 'cvDx', name: '순환계·혈관질환 진단비', desc: '심장 섹션에도 자동 반영', short: '순환계진단', std: 1000 },
+    { cat: 3, id: 'tB', name: '뇌혈관치료(연간)', short: '뇌혈관치료', std: 1000, inc: ['cvTx'] },
+    { cat: 3, id: 'cvTx', name: '순환계 주요치료비(연간)', desc: '심장 섹션에도 자동 반영', short: '순환계치료', std: 1000 },
 
-    { cat: 8, id: 'hAmi', name: '급성심근경색', short: '급성심근', std: 3000, inc: ['hIhd', 'hAll'] },
-    { cat: 8, id: 'hIhd', name: '허혈심장질환', short: '허혈심장', std: 2000, inc: ['hAll'] },
+    { cat: 8, id: 'hAmi', name: '급성심근경색', short: '급성심근', std: 3000, inc: ['hIhd', 'hAll', 'cvDx'] },
+    { cat: 8, id: 'hIhd', name: '허혈심장질환', short: '허혈심장', std: 2000, inc: ['hAll', 'cvDx'] },
     { cat: 8, id: 'hAll', name: '통합심장질환', short: '통합심장', std: 1000 },
-    { cat: 8, id: 'tH', name: '심혈관치료(연간)', short: '심혈관치료', std: 1000 },
+    { cat: 8, id: 'cvDxH', name: '순환계·혈관질환 진단비', desc: '뇌 섹션 입력값 연동', short: '순환계진단', std: 1000, src: 'cvDx' },
+    { cat: 8, id: 'tH', name: '심혈관치료(연간)', short: '심혈관치료', std: 1000, inc: ['cvTx'] },
+    { cat: 8, id: 'cvTxH', name: '순환계 주요치료비(연간)', desc: '뇌 섹션 입력값 연동', short: '순환계치료', std: 1000, src: 'cvTx' },
 
     { cat: 4, id: 'nDay', name: '일반병실 입원(일당)', short: '입원일당', std: 3 },
     { cat: 4, id: 'nIc', name: '간호통합병실(일당)', short: '간호통합', std: 5 },
@@ -588,7 +593,7 @@
         amt: amtOf({ vLia: 10000, vSet: 7000, vFine: 2000, vLaw: 500, vInj: 20 }) }
     ];
     S.nw = { name: 'C화재 통합', prem: 89000,
-      amt: amtOf({ dDis: 3000, aDis: 5000, cHigh: 3000, cGen: 1000, cSim: 200, bStr: 1000, bCvd: 1000, bAll: 1000,
+      amt: amtOf({ dDis: 3000, aDis: 5000, cHigh: 3000, cGen: 1000, cSim: 200, bStr: 1000, bCvd: 1000, bAll: 1000, cvDx: 1000, cvTx: 1000,
         hIhd: 1000, hAll: 1000, tCi: 1000, tCn: 1000, tCt: 2000, tB: 1000, tH: 1000, nDay: 1, nIc: 10, nCg: 10, nCgL: 5,
         vLia: 10000, vSet: 20000, vFine: 2000, vLaw: 3000, vInj: 30, sDmax: 500, sDmin: 30, sAmax: 500, sAmin: 30, sNmax: 1000, sNmin: 100,
         oFx: 20, oCast: 10, oBurn: 20 }) };
