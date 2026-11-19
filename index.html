@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/site.css?v=20261109">
+<link rel="stylesheet" href="/assets/site.css?v=20261119">
 </head>
 <body>
 
@@ -142,7 +142,7 @@
 <a class="btn btn-ghost" href="https://www.youtube.com/@fp60seconds" target="_blank" rel="noopener">채널 전체 보기</a>
 </div>
 </div>
-<div id="yt" class="video-grid" aria-label="최신 영상 목록"></div>
+<div id="yt" class="shorts-row" aria-label="최신 쇼츠 목록"></div>
 </div>
 </section>
 
@@ -209,7 +209,8 @@
   var box = document.getElementById('yt');
   var PLAYLIST = 'UUj6xeOFJopNMWaW1J7c9bAw';
   var SOURCES = ['https://raw.githubusercontent.com/agemoory/retirement_planing/main/data/videos.json', '/data/videos.json'];
-  var MAX = 3;
+  var MAX = 10;
+  var playing = null;
 
   function fallback() {
     box.className = 'video';
@@ -231,8 +232,10 @@
   }
 
   function play(item, v) {
+    if (playing && playing !== item) playing.reset();
+    playing = item;
     var f = document.createElement('iframe');
-    f.src = 'https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0';
+    f.src = 'https://www.youtube-nocookie.com/embed/' + v.id + '?autoplay=1&rel=0&playsinline=1';
     f.title = v.title;
     f.allow = 'autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
     f.referrerPolicy = 'strict-origin-when-cross-origin';
@@ -242,9 +245,13 @@
     thumb.appendChild(f);
   }
 
-  function render(list) {
+  function render(all) {
+    // 쇼츠만 세로 카드로. 쇼츠가 하나도 없을 때만 예전 가로 목록으로
+    var list = all.filter(function (v) { return v.short; });
+    var wide = !list.length;
+    if (wide) { list = all; box.className = 'video-grid'; }
     box.innerHTML = '';
-    list.slice(0, MAX).forEach(function (v) {
+    list.slice(0, wide ? 3 : MAX).forEach(function (v) {
       var item = document.createElement('div');
       item.className = 'vitem';
       var btn = document.createElement('button');
@@ -252,7 +259,7 @@
       btn.className = 'vthumb';
       btn.setAttribute('aria-label', v.title + ' 재생');
       var img = document.createElement('img');
-      img.src = 'https://i.ytimg.com/vi/' + v.id + '/mqdefault.jpg';
+      img.src = 'https://i.ytimg.com/vi/' + v.id + (wide ? '/mqdefault.jpg' : '/hqdefault.jpg');
       img.alt = '';
       img.loading = 'lazy';
       var icon = document.createElement('span');
@@ -261,6 +268,10 @@
       btn.appendChild(img);
       btn.appendChild(icon);
       btn.addEventListener('click', function () { play(item, v); });
+      item.reset = function () {
+        var th = item.querySelector('.vthumb');
+        th.innerHTML = ''; th.appendChild(img); th.appendChild(icon);
+      };
       var t = document.createElement('p');
       t.className = 'vtitle';
       t.textContent = v.title;
