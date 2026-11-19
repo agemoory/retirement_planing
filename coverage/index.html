@@ -61,8 +61,9 @@
 .sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .gt tr.cat-off th{color:var(--text2)}
 .gt tr.row-off th,.gt tr.row-off td{opacity:.45}
-.gt tr.row-pool th,.gt tr.row-pool td{background:#FBF8F1}
-.gt tr.row-pool .std input{font-size:12px;color:var(--text2)}
+.gt tr.row-pool th.lab{background:#FBF5E6;box-shadow:inset 3px 0 0 #E0B04A}
+.gt tr.row-pool .std input,.gt tr.row-pool .std input:disabled{background:transparent;border:1px dashed var(--border2);font-size:12px;color:var(--text2)}
+
 .fold-note{margin-left:6px;font-size:12px;font-weight:400;color:var(--text2)}
 .sec-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
 .sec-lab{font-size:14px;font-weight:500;color:var(--text2);margin-right:4px}
@@ -75,7 +76,7 @@
 .sec.is-off .mini-sw::after{left:2px}
 .sec:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .dot{width:10px;height:10px;border-radius:3px;flex:0 0 auto;display:inline-block}
-.gt input{width:100%;min-width:84px;min-height:36px;padding:0 8px;border:1px solid transparent;border-radius:7px;background:var(--bg);color:var(--text);font:15px var(--sans);font-variant-numeric:tabular-nums;text-align:right}
+.gt input{width:100%;min-width:84px;min-height:36px;padding:0 8px;border:1px solid var(--border2);border-radius:7px;background:#fff;color:var(--text);font:15px var(--sans);font-variant-numeric:tabular-nums;text-align:right}
 .gt input:hover{border-color:var(--border2)}
 .gt input:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent);background:#fff}
 .gt input:disabled{background:transparent;color:var(--text2);text-align:center}
