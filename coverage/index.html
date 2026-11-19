@@ -61,6 +61,7 @@
 .sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .gt tr.cat-off th{color:var(--text2)}
 .gt tr.row-off th,.gt tr.row-off td{opacity:.45}
+.fold-note{margin-left:6px;font-size:12px;font-weight:400;color:var(--text2)}
 .sec-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
 .sec-lab{font-size:14px;font-weight:500;color:var(--text2);margin-right:4px}
 .sec{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 10px 0 12px;border:1px solid var(--border2);border-radius:999px;background:#fff;font:500 14px var(--sans);color:var(--text);cursor:pointer}
@@ -213,7 +214,7 @@
 </div>
 <div class="sec-bar" id="sec-bar" role="group" aria-label="분석에 넣을 섹션"></div>
 <div class="grid-scroll"><table class="gt" id="gt"></table></div>
-<p class="unit-note">표 위 <b>‘분석에 넣을 섹션’</b> 스위치(또는 표 안 섹션 이름 옆 스위치)를 끄면 그 섹션 전체가 차트·충족 개수·리포트에서 빠져요. 입력한 숫자는 그대로 남아 있어요.<br>실손보험은 이 표에서 빼고, 위 고객 정보의 ‘실손보험’에 세대만 골라 주세요. 실제 받는 금액은 <a href="/silson/">실손 계산기</a>에서 볼 수 있어요.<br>단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
+<p class="unit-note">표 위 <b>‘분석에 넣을 섹션’</b> 스위치(또는 표 안 섹션 이름 옆 스위치)를 끄면 그 섹션이 접히고 차트·충족 개수·리포트에서 빠져요. 입력한 숫자는 그대로 남아 있어서, 다시 켜면 펼쳐져요.<br>실손보험은 이 표에서 빼고, 위 고객 정보의 ‘실손보험’에 세대만 골라 주세요. 실제 받는 금액은 <a href="/silson/">실손 계산기</a>에서 볼 수 있어요.<br>단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
 <b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 비급여암치료 칸에는 급여암치료 금액이, 비급여암특정치료 칸에는 급여·비급여암치료 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
 </section>
 
@@ -319,11 +320,9 @@
     { cat: 5, id: 'vInj', name: '자동차부상치료비(14급)', short: '자부치', std: 30, drv: true },
 
     { cat: 1, id: 'dImp', name: '임플란트(개당)', short: '임플란트', std: 100 },
-    { cat: 1, id: 'dBr', name: '브릿지(개당)', short: '브릿지', std: 50 },
-    { cat: 1, id: 'dDen', name: '틀니(1회)', short: '틀니', std: 100 },
     { cat: 1, id: 'dCr', name: '크라운(개당)', short: '크라운', std: 20 },
-    { cat: 1, id: 'dFill', name: '충전치료(레진·인레이, 개당)', short: '충전치료', std: 10 },
-    { cat: 1, id: 'dRc', name: '신경치료(근관, 1회)', short: '신경치료', std: 3 },
+    { cat: 1, id: 'dIn', name: '인레이(개당)', short: '인레이', std: 15 },
+    { cat: 1, id: 'dRes', name: '레진(개당)', short: '레진', std: 10 },
 
     { cat: 6, id: 'sD', name: '질병수술비', short: '질병수술', std: 20 },
     { cat: 6, id: 'sA', name: '상해수술비', short: '상해수술', std: 20 },
@@ -435,12 +434,12 @@
     ITEMS.forEach(function (it, r) {
       if (it.cat !== lastCat) {
         lastCat = it.cat;
-        h += '<tr class="cat' + (S.off[it.cat] ? ' cat-off' : '') + '"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + swHtml(it.cat) + '</span></th></tr>';
+        h += '<tr class="cat' + (S.off[it.cat] ? ' cat-off' : '') + '"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + swHtml(it.cat) + (S.off[it.cat] ? '<small class="fold-note">담보 ' + ITEMS.filter(function (x) { return x.cat === it.cat; }).length + '개 접힘 · 스위치를 켜면 다시 펼쳐져요</small>' : '') + '</span></th></tr>';
       }
       var note = [it.desc, it.incIdx.length ? '상위 담보 합산' : (it.max ? '중복 시 최대값' : '')].filter(Boolean).join(' · ');
       var noteTitle = it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
         : '실손형(비례보상) 담보라 여러 계약이 있어도 더하지 않고 가장 큰 한도만 인정해요.';
-      h += '<tr' + (S.off[it.cat] ? ' class="row-off"' : '') + '><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
+      h += '<tr' + (S.off[it.cat] ? ' class="row-off" hidden' : '') + '><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
       h += '<td class="std"><input type="text" inputmode="decimal" data-k="std" data-r="' + r + '" placeholder="0 = 제외" aria-label="' + it.name + ' 표준"></td>';
       var linked = '<span class="linked" title="' + ITEMS[it.srcIdx != null ? it.srcIdx : r].name + ' 칸에 넣은 가입금액을 그대로 씁니다">↑ 연동</span>';
       S.ex.forEach(function (e, c) {
