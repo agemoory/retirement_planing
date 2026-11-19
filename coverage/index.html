@@ -270,15 +270,19 @@
 <script>
 (function () {
   /* ---------- 기준 데이터 ---------- */
+  /* 섹션 색: 원 둘레에서 '바로 옆 섹션끼리' 색약인 사람도 구분되도록 검증한 배치.
+     섹션을 더 늘릴 때는 예비 색(#0e7f8c 청록, #9a5b2e 갈색, #7c8a12 올리브, #1d3f8f 남색, #4fa3e0 하늘)
+     중에서 골라, 원 둘레 순서대로 옆 색과 검증해서 넣을 것. 번호는 섹션 고유번호(표 순서와 무관). */
   var CATS = [
-    { name: '사망·장해',   color: '#2a78d6' },
-    { name: '치아',        color: '#1baf7a' },
-    { name: '진단비',      color: '#eb6834' },
-    { name: '치료비',      color: '#6250d6' },
-    { name: '입원·간병',   color: '#e34948' },
-    { name: '운전자·배상', color: '#eda100' },
-    { name: '수술',        color: '#008300' },
-    { name: '기타',        color: '#e87ba4' }
+    { name: '사망·장해',   color: '#2a78d6' },  // 0
+    { name: '치아',        color: '#1baf7a' },  // 1
+    { name: '암',          color: '#eb6834' },  // 2
+    { name: '뇌',          color: '#6250d6' },  // 3
+    { name: '입원·간병',   color: '#8e3b8a' },  // 4
+    { name: '운전자·배상', color: '#eda100' },  // 5
+    { name: '수술',        color: '#008300' },  // 6
+    { name: '기타',        color: '#e87ba4' },  // 7
+    { name: '심장',        color: '#e34948' }   // 8
   ];
   /* 담보 정의
      cat: 그룹, id, name: 표시명, short: 차트 라벨, std: 표준금액(만원)
@@ -294,19 +298,20 @@
     { cat: 2, id: 'cHigh', name: '고액암', short: '고액암', std: 5000, inc: ['cGen'] },
     { cat: 2, id: 'cGen', name: '일반암', short: '일반암', std: 3000 },
     { cat: 2, id: 'cSim', name: '유사암', short: '유사암', std: 600 },
-    { cat: 2, id: 'bHem', name: '뇌출혈', short: '뇌출혈', std: 3000, inc: ['bStr', 'bCvd', 'bAll'] },
-    { cat: 2, id: 'bStr', name: '뇌졸중', short: '뇌졸중', std: 3000, inc: ['bCvd', 'bAll'] },
-    { cat: 2, id: 'bCvd', name: '뇌혈관질환', short: '뇌혈관', std: 2000, inc: ['bAll'] },
-    { cat: 2, id: 'bAll', name: '통합뇌관련질환', short: '통합뇌', std: 1000 },
-    { cat: 2, id: 'hAmi', name: '급성심근경색', short: '급성심근', std: 3000, inc: ['hIhd', 'hAll'] },
-    { cat: 2, id: 'hIhd', name: '허혈심장질환', short: '허혈심장', std: 2000, inc: ['hAll'] },
-    { cat: 2, id: 'hAll', name: '통합심장질환', short: '통합심장', std: 1000 },
+    { cat: 2, id: 'tCi', name: '급여암치료(연간)', short: '급여암치료', std: 1000 },
+    { cat: 2, id: 'tCn', name: '비급여암치료(연간)', short: '비급여암치료', std: 1000, inc: ['tCi'] },
+    { cat: 2, id: 'tCt', name: '비급여암특정치료(연간)', short: '비급여특정', std: 2000, inc: ['tCi', 'tCn'] },
 
-    { cat: 3, id: 'tCi', name: '급여암치료(연간)', short: '급여암치료', std: 1000 },
-    { cat: 3, id: 'tCn', name: '비급여암치료(연간)', short: '비급여암치료', std: 1000, inc: ['tCi'] },
-    { cat: 3, id: 'tCt', name: '비급여암특정치료(연간)', short: '비급여특정', std: 2000, inc: ['tCi', 'tCn'] },
+    { cat: 3, id: 'bHem', name: '뇌출혈', short: '뇌출혈', std: 3000, inc: ['bStr', 'bCvd', 'bAll'] },
+    { cat: 3, id: 'bStr', name: '뇌졸중', short: '뇌졸중', std: 3000, inc: ['bCvd', 'bAll'] },
+    { cat: 3, id: 'bCvd', name: '뇌혈관질환', short: '뇌혈관', std: 2000, inc: ['bAll'] },
+    { cat: 3, id: 'bAll', name: '통합뇌관련질환', short: '통합뇌', std: 1000 },
     { cat: 3, id: 'tB', name: '뇌혈관치료(연간)', short: '뇌혈관치료', std: 1000 },
-    { cat: 3, id: 'tH', name: '심혈관치료(연간)', short: '심혈관치료', std: 1000 },
+
+    { cat: 8, id: 'hAmi', name: '급성심근경색', short: '급성심근', std: 3000, inc: ['hIhd', 'hAll'] },
+    { cat: 8, id: 'hIhd', name: '허혈심장질환', short: '허혈심장', std: 2000, inc: ['hAll'] },
+    { cat: 8, id: 'hAll', name: '통합심장질환', short: '통합심장', std: 1000 },
+    { cat: 8, id: 'tH', name: '심혈관치료(연간)', short: '심혈관치료', std: 1000 },
 
     { cat: 4, id: 'nDay', name: '일반병실 입원(일당)', short: '입원일당', std: 3 },
     { cat: 4, id: 'nIc', name: '간호통합병실(일당)', short: '간호통합', std: 5 },
