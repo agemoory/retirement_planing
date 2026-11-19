@@ -217,7 +217,7 @@
 <div class="sec-bar" id="sec-bar" role="group" aria-label="분석에 넣을 섹션"></div>
 <div class="grid-scroll"><table class="gt" id="gt"></table></div>
 <p class="unit-note">실손은 처음엔 꺼져 있어요. 켜면 질병·상해 입원/통원과 3대비급여를 표준과 비교하고, 여러 건이어도 가장 큰 한도만 인정해요. 실제 받는 금액은 <a href="/silson/">실손 계산기</a>에서 볼 수 있어요.<br>표 위 <b>‘분석에 넣을 섹션’</b> 스위치(또는 표 안 섹션 이름 옆 스위치)를 끄면 그 섹션이 접히고 차트·충족 개수·리포트에서 빠져요. 입력한 숫자는 그대로 남아 있어서, 다시 켜면 펼쳐져요.<br>단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
-<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 암 치료 칸(항암방사선·표적·면역·중입자·수술·다빈치)에는 그 치료 특약에 통합치료비(암주요치료·비급여암치료·비급여암특정치료) 중 해당되는 금액이 더해져요 — 그 치료를 받으면 나오는 돈 기준이고, 통합치료비 줄 자체는 그래프·충족 개수에서 빠져요. · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
+<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 암 치료 칸(급여 3종·비급여 6종)에는 그 치료 특약에 통합치료비 중 해당되는 금액이 더해져요(암주요치료 → 전부, 비급여암치료 → 비급여 6종, 비급여암특정치료 → 표적·면역·양성자 300%·다빈치 100%) — 그 치료를 받으면 나오는 돈 기준이고, 통합치료비 줄 자체는 그래프·충족 개수에서 빠져요. · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
 </section>
 
 <section class="panel" aria-labelledby="h-result">
@@ -301,18 +301,24 @@
     { cat: 2, id: 'cHigh', name: '고액암', short: '고액암', std: 5000, inc: ['cGen'] },
     { cat: 2, id: 'cGen', name: '일반암', short: '일반암', std: 3000 },
     { cat: 2, id: 'cSim', name: '유사암', short: '유사암', std: 600 },
+    { cat: 2, id: 'cSec', name: '이차암', short: '이차암', std: 1000 },
+    { cat: 2, id: 'cMet', name: '전이암', short: '전이암', std: 1000 },
+    { cat: 2, id: 'cRec', name: '재발암', short: '재발암', std: 1000 },
     // 통합치료비류: 표에 가입한 대로 입력만 받고 그래프·충족 개수에서는 뺌 → 아래 치료 칸에 더해짐
     { cat: 2, id: 'tCi', name: '암주요치료(급여포함)', desc: '통합 · 아래 모든 치료 칸에 반영', short: '암주요치료', std: 0, pool: true },
     { cat: 2, id: 'tCn', name: '비급여암치료', desc: '통합 · 비급여 치료 칸에 반영', short: '비급여암치료', std: 0, pool: true },
-    { cat: 2, id: 'tCt', name: '비급여암특정치료', desc: '통합 · 표적(비급여)·면역·다빈치에 반영', short: '비급여특정', std: 0, pool: true },
+    { cat: 2, id: 'tCt', name: '비급여암특정치료', desc: '통합 · 표적(비급여)·면역·양성자 300%, 다빈치 100% 반영', short: '비급여특정', std: 0, pool: true },
     // 치료방식별 칸: 그 치료 전용 특약 + 해당 통합치료비 = 그 치료를 받으면 나오는 돈
+    // 급여 3종
     { cat: 2, id: 'tRadG', name: '항암방사선(급여)', short: '방사선급여', std: 1000, inc: ['tCi'] },
-    { cat: 2, id: 'tRadN', name: '항암방사선(비급여)', short: '방사선비급여', std: 1000, inc: ['tCi', 'tCn'] },
     { cat: 2, id: 'tTarG', name: '표적항암약물(급여)', short: '표적급여', std: 1000, inc: ['tCi'] },
-    { cat: 2, id: 'tTarN', name: '표적항암약물(비급여)', short: '표적비급여', std: 2000, inc: ['tCi', 'tCn', 'tCt'] },
-    { cat: 2, id: 'tImmN', name: '면역항암약물(비급여)', short: '면역비급여', std: 2000, inc: ['tCi', 'tCn', 'tCt'] },
+    { cat: 2, id: 'tSurG', name: '암수술(급여)', short: '암수술급여', std: 1000, inc: ['tCi'] },
+    // 비급여 6종 (비급여암특정치료: 표적·면역·양성자 ×3, 다빈치 ×1)
+    { cat: 2, id: 'tRadN', name: '항암방사선(비급여)', short: '방사선비급여', std: 1000, inc: ['tCi', 'tCn'] },
+    { cat: 2, id: 'tTarN', name: '표적항암약물(비급여)', short: '표적비급여', std: 2000, inc: ['tCi', 'tCn', 'tCt*3'] },
+    { cat: 2, id: 'tImmN', name: '면역항암약물(비급여)', short: '면역비급여', std: 2000, inc: ['tCi', 'tCn', 'tCt*3'] },
+    { cat: 2, id: 'tProN', name: '양성자방사선(비급여)', short: '양성자', std: 2000, inc: ['tCi', 'tCn', 'tCt*3'] },
     { cat: 2, id: 'tCarN', name: '중입자방사선(비급여)', short: '중입자', std: 2000, inc: ['tCi', 'tCn'] },
-    { cat: 2, id: 'tSurG', name: '급여암수술', short: '급여암수술', std: 1000, inc: ['tCi'] },
     { cat: 2, id: 'tDav', name: '다빈치로봇수술', short: '다빈치', std: 1000, inc: ['tCi', 'tCn', 'tCt'] },
 
     { cat: 3, id: 'bHem', name: '뇌출혈', short: '뇌출혈', std: 3000, inc: ['bStr', 'bCvd', 'bAll', 'cvDx'] },
@@ -370,7 +376,9 @@
   var IDX = {};
   ITEMS.forEach(function (it, r) { IDX[it.id] = r; });
   ITEMS.forEach(function (it) {
-    it.incIdx = (it.inc || []).map(function (id) { return IDX[id]; });
+    // inc 항목은 'id' 또는 'id*배수' (예: 'tCt*3' = 그 담보 가입금액의 300%를 더함)
+    it.incIdx = (it.inc || []).map(function (x) { return IDX[x.split('*')[0]]; });
+    it.incMul = (it.inc || []).map(function (x) { return +(x.split('*')[1] || 1); });
     it.srcIdx = it.src ? IDX[it.src] : null;   // 다른 담보의 가입금액을 그대로 쓰는 연동 칸
     it.driverOnly = !!it.drv;
   });
@@ -408,7 +416,8 @@
   }
   // 실제 받는 금액 — 상위 담보(포함 관계) 금액까지 더함
   function effOf(set, r) {
-    return ITEMS[r].incIdx.reduce(function (s, w) { return s + rawOf(set, w); }, rawOf(set, r));
+    var it = ITEMS[r];
+    return it.incIdx.reduce(function (s, w, k) { return s + rawOf(set, w) * it.incMul[k]; }, rawOf(set, r));
   }
   function setNow() { return S.ex; }
   function setProp() { return S.ex.filter(function (e) { return e.keep; }).concat([S.nw]); }
@@ -466,7 +475,7 @@
         h += '<tr class="cat' + (S.off[it.cat] ? ' cat-off' : '') + '"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + swHtml(it.cat) + (S.off[it.cat] ? '<small class="fold-note">담보 ' + ITEMS.filter(function (x) { return x.cat === it.cat; }).length + '개 접힘 · 스위치를 켜면 다시 펼쳐져요</small>' : '') + '</span></th></tr>';
       }
       var note = [it.desc, it.incIdx.length ? (it.incIdx.every(function (w) { return ITEMS[w].pool; }) ? '통합치료비 합산' : '상위 담보 합산') : (it.max ? '중복 시 최대값' : '')].filter(Boolean).join(' · ');
-      var noteTitle = it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
+      var noteTitle = it.incIdx.length ? '이 담보를 함께 보장하는 담보(' + it.incIdx.map(function (w, k) { return ITEMS[w].name + (it.incMul[k] !== 1 ? ' ' + it.incMul[k] * 100 + '%' : ''); }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
         : '실손형(비례보상) 담보라 여러 계약이 있어도 더하지 않고 가장 큰 한도만 인정해요.';
       var rc = [S.off[it.cat] ? 'row-off' : '', it.pool ? 'row-pool' : ''].filter(Boolean).join(' ');
       h += '<tr' + (rc ? ' class="' + rc + '"' : '') + (S.off[it.cat] ? ' hidden' : '') + '><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
