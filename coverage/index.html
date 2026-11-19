@@ -61,6 +61,8 @@
 .sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .gt tr.cat-off th{color:var(--text2)}
 .gt tr.row-off th,.gt tr.row-off td{opacity:.45}
+.gt tr.row-pool th,.gt tr.row-pool td{background:#FBF8F1}
+.gt tr.row-pool .std input{font-size:12px;color:var(--text2)}
 .fold-note{margin-left:6px;font-size:12px;font-weight:400;color:var(--text2)}
 .sec-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
 .sec-lab{font-size:14px;font-weight:500;color:var(--text2);margin-right:4px}
@@ -215,7 +217,7 @@
 <div class="sec-bar" id="sec-bar" role="group" aria-label="분석에 넣을 섹션"></div>
 <div class="grid-scroll"><table class="gt" id="gt"></table></div>
 <p class="unit-note">실손은 처음엔 꺼져 있어요. 켜면 질병·상해 입원/통원과 3대비급여를 표준과 비교하고, 여러 건이어도 가장 큰 한도만 인정해요. 실제 받는 금액은 <a href="/silson/">실손 계산기</a>에서 볼 수 있어요.<br>표 위 <b>‘분석에 넣을 섹션’</b> 스위치(또는 표 안 섹션 이름 옆 스위치)를 끄면 그 섹션이 접히고 차트·충족 개수·리포트에서 빠져요. 입력한 숫자는 그대로 남아 있어서, 다시 켜면 펼쳐져요.<br>단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
-<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 비급여암치료 칸에는 급여암치료 금액이, 비급여암특정치료 칸에는 급여·비급여암치료 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
+<b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 암 치료 칸(항암방사선·표적·면역·중입자·수술·다빈치)에는 그 치료 특약에 통합치료비(암주요치료·비급여암치료·비급여암특정치료) 중 해당되는 금액이 더해져요 — 그 치료를 받으면 나오는 돈 기준이고, 통합치료비 줄 자체는 그래프·충족 개수에서 빠져요. · <b>중복 시 최대값</b>: 실손·배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
 </section>
 
 <section class="panel" aria-labelledby="h-result">
@@ -299,9 +301,19 @@
     { cat: 2, id: 'cHigh', name: '고액암', short: '고액암', std: 5000, inc: ['cGen'] },
     { cat: 2, id: 'cGen', name: '일반암', short: '일반암', std: 3000 },
     { cat: 2, id: 'cSim', name: '유사암', short: '유사암', std: 600 },
-    { cat: 2, id: 'tCi', name: '급여암치료(연간)', short: '급여암치료', std: 1000 },
-    { cat: 2, id: 'tCn', name: '비급여암치료(연간)', short: '비급여암치료', std: 1000, inc: ['tCi'] },
-    { cat: 2, id: 'tCt', name: '비급여암특정치료(연간)', short: '비급여특정', std: 2000, inc: ['tCi', 'tCn'] },
+    // 통합치료비류: 표에 가입한 대로 입력만 받고 그래프·충족 개수에서는 뺌 → 아래 치료 칸에 더해짐
+    { cat: 2, id: 'tCi', name: '암주요치료(급여포함)', desc: '통합 · 아래 모든 치료 칸에 반영', short: '암주요치료', std: 0, pool: true },
+    { cat: 2, id: 'tCn', name: '비급여암치료', desc: '통합 · 비급여 치료 칸에 반영', short: '비급여암치료', std: 0, pool: true },
+    { cat: 2, id: 'tCt', name: '비급여암특정치료', desc: '통합 · 표적(비급여)·면역·다빈치에 반영', short: '비급여특정', std: 0, pool: true },
+    // 치료방식별 칸: 그 치료 전용 특약 + 해당 통합치료비 = 그 치료를 받으면 나오는 돈
+    { cat: 2, id: 'tRadG', name: '항암방사선(급여)', short: '방사선급여', std: 1000, inc: ['tCi'] },
+    { cat: 2, id: 'tRadN', name: '항암방사선(비급여)', short: '방사선비급여', std: 1000, inc: ['tCi', 'tCn'] },
+    { cat: 2, id: 'tTarG', name: '표적항암약물(급여)', short: '표적급여', std: 1000, inc: ['tCi'] },
+    { cat: 2, id: 'tTarN', name: '표적항암약물(비급여)', short: '표적비급여', std: 2000, inc: ['tCi', 'tCn', 'tCt'] },
+    { cat: 2, id: 'tImmN', name: '면역항암약물(비급여)', short: '면역비급여', std: 2000, inc: ['tCi', 'tCn', 'tCt'] },
+    { cat: 2, id: 'tCarN', name: '중입자방사선(비급여)', short: '중입자', std: 2000, inc: ['tCi', 'tCn'] },
+    { cat: 2, id: 'tSurG', name: '급여암수술', short: '급여암수술', std: 1000, inc: ['tCi'] },
+    { cat: 2, id: 'tDav', name: '다빈치로봇수술', short: '다빈치', std: 1000, inc: ['tCi', 'tCn', 'tCt'] },
 
     { cat: 3, id: 'bHem', name: '뇌출혈', short: '뇌출혈', std: 3000, inc: ['bStr', 'bCvd', 'bAll', 'cvDx'] },
     { cat: 3, id: 'bStr', name: '뇌졸중', short: '뇌졸중', std: 3000, inc: ['bCvd', 'bAll', 'cvDx'] },
@@ -380,7 +392,7 @@
 
   /* ---------- 계산 ---------- */
   // 표준이 0이면 차트·충족 개수·표·리포트에서 모두 빠짐 → 섹션을 끄면 그 섹션 표준을 0으로 취급
-  function stdEff(r) { var it = ITEMS[r]; return (S.off[it.cat] || (it.driverOnly && !S.info.driver)) ? 0 : S.std[r]; }
+  function stdEff(r) { var it = ITEMS[r]; return (it.pool || S.off[it.cat] || (it.driverOnly && !S.info.driver)) ? 0 : S.std[r]; }
   // 표에 나오는 순서대로의 섹션 목록
   var CAT_ORDER = ITEMS.reduce(function (a, it) { if (a.indexOf(it.cat) < 0) a.push(it.cat); return a; }, []);
   // 계약 묶음에서 한 담보의 '자기 금액' — 실손형은 최대값, 나머지는 합계
@@ -453,10 +465,11 @@
         lastCat = it.cat;
         h += '<tr class="cat' + (S.off[it.cat] ? ' cat-off' : '') + '"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + swHtml(it.cat) + (S.off[it.cat] ? '<small class="fold-note">담보 ' + ITEMS.filter(function (x) { return x.cat === it.cat; }).length + '개 접힘 · 스위치를 켜면 다시 펼쳐져요</small>' : '') + '</span></th></tr>';
       }
-      var note = [it.desc, it.incIdx.length ? '상위 담보 합산' : (it.max ? '중복 시 최대값' : '')].filter(Boolean).join(' · ');
+      var note = [it.desc, it.incIdx.length ? (it.incIdx.every(function (w) { return ITEMS[w].pool; }) ? '통합치료비 합산' : '상위 담보 합산') : (it.max ? '중복 시 최대값' : '')].filter(Boolean).join(' · ');
       var noteTitle = it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
         : '실손형(비례보상) 담보라 여러 계약이 있어도 더하지 않고 가장 큰 한도만 인정해요.';
-      h += '<tr' + (S.off[it.cat] ? ' class="row-off" hidden' : '') + '><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
+      var rc = [S.off[it.cat] ? 'row-off' : '', it.pool ? 'row-pool' : ''].filter(Boolean).join(' ');
+      h += '<tr' + (rc ? ' class="' + rc + '"' : '') + (S.off[it.cat] ? ' hidden' : '') + '><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
       h += '<td class="std"><input type="text" inputmode="decimal" data-k="std" data-r="' + r + '" placeholder="0 = 제외" aria-label="' + it.name + ' 표준"></td>';
       var linked = '<span class="linked" title="' + ITEMS[it.srcIdx != null ? it.srcIdx : r].name + ' 칸에 넣은 가입금액을 그대로 씁니다">↑ 연동</span>';
       S.ex.forEach(function (e, c) {
@@ -480,9 +493,9 @@
     gt.querySelectorAll('input').forEach(function (inp) {
       var k = inp.dataset.k, r = +inp.dataset.r, c = +inp.dataset.c;
       if (k === 'std') {
-        var off = ITEMS[r].driverOnly && !S.info.driver;
-        inp.disabled = off;
-        inp.value = off ? '해당없음' : fmtIn(S.std[r]);
+        var pool = ITEMS[r].pool, off = ITEMS[r].driverOnly && !S.info.driver;
+        inp.disabled = off || pool;
+        inp.value = pool ? '그래프 제외' : (off ? '해당없음' : fmtIn(S.std[r]));
       }
       else if (k === 'ex') inp.value = fmtIn(S.ex[c].amt[r]);
       else if (k === 'nw') inp.value = fmtIn(S.nw.amt[r]);
