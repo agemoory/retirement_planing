@@ -52,6 +52,25 @@
 .gt thead .lab{z-index:3}
 .gt tr.cat th{background:var(--bg);text-align:left;padding:8px 14px 6px;font-size:13px;font-weight:700;color:var(--text)}
 .gt tr.cat th span{position:sticky;left:14px;display:inline-flex;align-items:center;gap:8px}
+.sw{display:inline-flex;align-items:center;gap:6px;margin-left:10px;padding:2px 4px;border:0;background:none;cursor:pointer;font:500 12px var(--sans);color:var(--accent-dark)}
+.sw i{position:relative;width:34px;height:20px;border-radius:999px;background:var(--accent);transition:background .15s}
+.sw i::after{content:"";position:absolute;top:2px;left:16px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.sw[aria-checked="false"]{color:var(--text2)}
+.sw[aria-checked="false"] i{background:var(--border2)}
+.sw[aria-checked="false"] i::after{left:2px}
+.sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.gt tr.cat-off th{color:var(--text2)}
+.gt tr.row-off th,.gt tr.row-off td{opacity:.45}
+.sec-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}
+.sec-lab{font-size:14px;font-weight:500;color:var(--text2);margin-right:4px}
+.sec{display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:0 10px 0 12px;border:1px solid var(--border2);border-radius:999px;background:#fff;font:500 14px var(--sans);color:var(--text);cursor:pointer}
+.sec .mini-sw{position:relative;width:28px;height:16px;border-radius:999px;background:var(--accent)}
+.sec .mini-sw::after{content:"";position:absolute;top:2px;left:14px;width:12px;height:12px;border-radius:50%;background:#fff;transition:left .15s}
+.sec.is-off{color:var(--text2);background:var(--bg);border-style:dashed}
+.sec.is-off .dot{opacity:.35}
+.sec.is-off .mini-sw{background:var(--border2)}
+.sec.is-off .mini-sw::after{left:2px}
+.sec:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .dot{width:10px;height:10px;border-radius:3px;flex:0 0 auto;display:inline-block}
 .gt input{width:100%;min-width:84px;min-height:36px;padding:0 8px;border:1px solid transparent;border-radius:7px;background:var(--bg);color:var(--text);font:15px var(--sans);font-variant-numeric:tabular-nums;text-align:right}
 .gt input:hover{border-color:var(--border2)}
@@ -192,8 +211,9 @@
 <button type="button" class="btn btn-ghost btn-sm" id="btn-std">표준금액 기본값으로</button>
 </div>
 </div>
+<div class="sec-bar" id="sec-bar" role="group" aria-label="분석에 넣을 섹션"></div>
 <div class="grid-scroll"><table class="gt" id="gt"></table></div>
-<p class="unit-note">실손보험은 이 표에서 빼고, 위 고객 정보의 ‘실손보험’에 세대만 골라 주세요. 실제 받는 금액은 <a href="/silson/">실손 계산기</a>에서 볼 수 있어요.<br>단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
+<p class="unit-note">표 위 <b>‘분석에 넣을 섹션’</b> 스위치(또는 표 안 섹션 이름 옆 스위치)를 끄면 그 섹션 전체가 차트·충족 개수·리포트에서 빠져요. 입력한 숫자는 그대로 남아 있어요.<br>실손보험은 이 표에서 빼고, 위 고객 정보의 ‘실손보험’에 세대만 골라 주세요. 실제 받는 금액은 <a href="/silson/">실손 계산기</a>에서 볼 수 있어요.<br>단위: 만원 (일당은 1일당, 보험료는 원) · <b>해지</b>로 바꾼 기존 계약은 ‘제안 후 합계’에서 빠집니다 · 표준 보장을 <b>0(빈칸)</b>으로 두면 그 담보는 차트·충족 개수·리포트에서 빠져요. 비운전형이면 운전자 담보 4개가 자동으로 빠집니다.<br>
 <b>상위 담보 합산</b>: 뇌출혈 칸에는 뇌졸중·뇌혈관·통합뇌 금액이, 고액암 칸에는 일반암 금액이, 비급여암치료 칸에는 급여암치료 금액이, 비급여암특정치료 칸에는 급여·비급여암치료 금액이 함께 더해져요 (실제 받는 금액 기준). · <b>중복 시 최대값</b>: 배상책임·형사합의금 같은 비례보상 담보는 여러 건이어도 가장 큰 한도만 인정해요.</p>
 </section>
 
@@ -251,7 +271,7 @@
   /* ---------- 기준 데이터 ---------- */
   var CATS = [
     { name: '사망·장해',   color: '#2a78d6' },
-    { name: '실손',        color: '#1baf7a' },
+    { name: '치아',        color: '#1baf7a' },
     { name: '진단비',      color: '#eb6834' },
     { name: '치료비',      color: '#6250d6' },
     { name: '입원·간병',   color: '#e34948' },
@@ -298,6 +318,13 @@
     { cat: 5, id: 'vLaw', name: '변호사선임비용', short: '변호사비', std: 3000, max: true, drv: true },
     { cat: 5, id: 'vInj', name: '자동차부상치료비(14급)', short: '자부치', std: 30, drv: true },
 
+    { cat: 1, id: 'dImp', name: '임플란트(개당)', short: '임플란트', std: 100 },
+    { cat: 1, id: 'dBr', name: '브릿지(개당)', short: '브릿지', std: 50 },
+    { cat: 1, id: 'dDen', name: '틀니(1회)', short: '틀니', std: 100 },
+    { cat: 1, id: 'dCr', name: '크라운(개당)', short: '크라운', std: 20 },
+    { cat: 1, id: 'dFill', name: '충전치료(레진·인레이, 개당)', short: '충전치료', std: 10 },
+    { cat: 1, id: 'dRc', name: '신경치료(근관, 1회)', short: '신경치료', std: 3 },
+
     { cat: 6, id: 'sD', name: '질병수술비', short: '질병수술', std: 20 },
     { cat: 6, id: 'sA', name: '상해수술비', short: '상해수술', std: 20 },
     { cat: 6, id: 'sDmax', name: '질병 종수술비(최대)', short: '질병종최대', std: 200 },
@@ -329,13 +356,17 @@
       info: { client: '', income: '', period: '', life: '', planner: '', contact: '', silson: '', driver: true },
       std: defaultStd(),
       ex: [{ name: '기존 1', keep: true, amt: zeros(), prem: 0 }],
-      nw: { name: '신규 제안', amt: zeros(), prem: 0 }
+      nw: { name: '신규 제안', amt: zeros(), prem: 0 },
+      off: {}   // 분석에서 뺀 섹션 (카테고리 번호: true)
     };
   }
   var S = blankState();
 
   /* ---------- 계산 ---------- */
-  function stdEff(r) { return (ITEMS[r].driverOnly && !S.info.driver) ? 0 : S.std[r]; }
+  // 표준이 0이면 차트·충족 개수·표·리포트에서 모두 빠짐 → 섹션을 끄면 그 섹션 표준을 0으로 취급
+  function stdEff(r) { var it = ITEMS[r]; return (S.off[it.cat] || (it.driverOnly && !S.info.driver)) ? 0 : S.std[r]; }
+  // 표에 나오는 순서대로의 섹션 목록
+  var CAT_ORDER = ITEMS.reduce(function (a, it) { if (a.indexOf(it.cat) < 0) a.push(it.cat); return a; }, []);
   // 계약 묶음에서 한 담보의 '자기 금액' — 실손형은 최대값, 나머지는 합계
   function baseOf(set, r) {
     var vals = set.map(function (c) { return c.amt[r] || 0; });
@@ -377,7 +408,19 @@
 
   /* ---------- 입력 표 ---------- */
   var gt = document.getElementById('gt');
+  function swHtml(c) {
+    var on = !S.off[c];
+    return '<button type="button" class="sw" role="switch" aria-checked="' + on + '" data-cat="' + c + '" aria-label="' + CATS[c].name + ' 분석에 포함"><i aria-hidden="true"></i><b>' + (on ? '분석 포함' : '분석 제외') + '</b></button>';
+  }
+  function buildSecBar() {
+    document.getElementById('sec-bar').innerHTML = '<span class="sec-lab">분석에 넣을 섹션</span>' + CAT_ORDER.map(function (c) {
+      var on = !S.off[c];
+      return '<button type="button" class="sec' + (on ? '' : ' is-off') + '" role="switch" aria-checked="' + on + '" data-cat="' + c + '"><i class="dot" style="background:' + CATS[c].color + '"></i>' + CATS[c].name + '<span class="mini-sw" aria-hidden="true"></span></button>';
+    }).join('');
+  }
+  function toggleCat(c) { if (S.off[c]) delete S.off[c]; else S.off[c] = true; buildGrid(); }
   function buildGrid() {
+    buildSecBar();
     var h = '<thead><tr><th class="lab" scope="col">담보</th><th scope="col"><div class="colname"><span>표준 보장</span></div></th>';
     S.ex.forEach(function (e, c) {
       h += '<th scope="col"><div class="colname"><input type="text" value="' + esc(e.name) + '" data-k="exname" data-c="' + c + '" aria-label="기존 계약 ' + (c + 1) + ' 이름" placeholder="보험사/상품명">' +
@@ -392,12 +435,12 @@
     ITEMS.forEach(function (it, r) {
       if (it.cat !== lastCat) {
         lastCat = it.cat;
-        h += '<tr class="cat"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + '</span></th></tr>';
+        h += '<tr class="cat' + (S.off[it.cat] ? ' cat-off' : '') + '"><th colspan="' + cols + '"><span><i class="dot" style="background:' + CATS[it.cat].color + '"></i>' + CATS[it.cat].name + swHtml(it.cat) + '</span></th></tr>';
       }
       var note = [it.desc, it.incIdx.length ? '상위 담보 합산' : (it.max ? '중복 시 최대값' : '')].filter(Boolean).join(' · ');
       var noteTitle = it.incIdx.length ? '이 담보를 함께 보장하는 상위 담보(' + it.incIdx.map(function (w) { return ITEMS[w].name; }).join(', ') + ') 금액까지 더해 합계에 반영해요.'
         : '실손형(비례보상) 담보라 여러 계약이 있어도 더하지 않고 가장 큰 한도만 인정해요.';
-      h += '<tr><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
+      h += '<tr' + (S.off[it.cat] ? ' class="row-off"' : '') + '><th class="lab" scope="row">' + it.name + (note ? '<small class="note" title="' + noteTitle + '">' + note + '</small>' : '') + '</th>';
       h += '<td class="std"><input type="text" inputmode="decimal" data-k="std" data-r="' + r + '" placeholder="0 = 제외" aria-label="' + it.name + ' 표준"></td>';
       var linked = '<span class="linked" title="' + ITEMS[it.srcIdx != null ? it.srcIdx : r].name + ' 칸에 넣은 가입금액을 그대로 씁니다">↑ 연동</span>';
       S.ex.forEach(function (e, c) {
@@ -487,8 +530,12 @@
     }
     inp.blur();
   });
+  document.getElementById('sec-bar').addEventListener('click', function (e) {
+    var b = e.target.closest('button.sec'); if (b) toggleCat(+b.dataset.cat);
+  });
   gt.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
+    if (b.classList.contains('sw')) { toggleCat(+b.dataset.cat); return; }
     var c = +b.dataset.c;
     if (b.classList.contains('keep')) { S.ex[c].keep = !S.ex[c].keep; buildGrid(); }
     else if (b.classList.contains('del')) {
@@ -642,6 +689,7 @@
   function cntHtml(c) { return '충족 <strong>' + c.ok + '</strong> / ' + c.tot; }
   function drawAll() {
     serNow = series(exSum); serProp = series(propSum);
+    drawLegend();
     renderCanvas(cvNow, serNow); renderCanvas(cvProp, serProp);
     var sl = document.getElementById('silson-line'), sv = S.info.silson;
     sl.hidden = !sv;
@@ -659,9 +707,14 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleDraw);
 
   // 범례
-  document.getElementById('legend').innerHTML = CATS.filter(function (c, i) { return ITEMS.some(function (it) { return it.cat === i; }); }).map(function (c) {
-    return '<li><i class="dot" style="background:' + c.color + '"></i>' + c.name + '</li>';
-  }).join('') + '<li><i class="sw-std"></i>바깥 원 = 표준 100%</li>';
+  function activeCats() {
+    return CAT_ORDER.filter(function (c) { return ITEMS.some(function (it, r) { return it.cat === c && stdEff(r) > 0; }); });
+  }
+  function drawLegend() {
+    document.getElementById('legend').innerHTML = activeCats().map(function (c) {
+      return '<li><i class="dot" style="background:' + CATS[c].color + '"></i>' + CATS[c].name + '</li>';
+    }).join('') + '<li><i class="sw-std"></i>바깥 원 = 표준 100%</li>';
+  }
 
   // 툴팁
   function attachTip(cv, getSer) {
@@ -777,7 +830,7 @@
 
     // 범례
     ctx.font = '400 14px ' + FONT; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
-    var items = CATS.filter(function (c, i) { return ITEMS.some(function (it) { return it.cat === i; }); }).map(function (c) { return { t: c.name, c: c.color }; });
+    var items = activeCats().map(function (c) { return { t: CATS[c].name, c: CATS[c].color }; });
     items.push({ t: '바깥 원 = 표준 100%', std: true });
     var lw = items.reduce(function (s, it) { return s + 20 + ctx.measureText(it.t).width + 22; }, -22);
     var lx = (W - lw) / 2, ly = y + 8;
