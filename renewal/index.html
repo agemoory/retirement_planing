@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>통합보험, 언제부터 보험료를 더 낼까? · josung.kr</title>
+<meta name="description" content="갱신형 특약 보험료를 적립금에서 내는(대체납입) 통합보험, 적립금이 바닥나서 보험료를 따로 더 내기 시작하는 나이와 금액을 계산해 드려요.">
+<meta property="og:title" content="통합보험, 언제부터 보험료를 더 낼까? · josung.kr">
+<meta property="og:description" content="납입이 끝나도 갱신 보험료는 적립금에서 계속 빠져요. 적립금이 바닥나는 나이를 미리 확인하세요.">
+<meta property="og:url" content="https://josung.kr/renewal/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://josung.kr/assets/og.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/site.css?v=20261119">
+<style>
+.rn-hero{padding:56px 0 28px}
+.rn-hero h1{margin:12px 0 14px;font-family:var(--serif);font-size:40px;line-height:1.3;text-wrap:balance}
+.rn-hero .lead{margin:0;font-size:17px;color:var(--text2);max-width:36em}
+.wrap.pn{max-width:960px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px}
+.panel h2{margin:0 0 4px;font-family:var(--serif);font-size:22px;line-height:1.4}
+.panel .sub{margin:0 0 20px;font-size:15px;color:var(--text2)}
+.step{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--accent-light);color:var(--accent-dark);font:700 14px var(--sans)}
+
+.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.item{display:flex;gap:14px;padding:20px 0;border-top:1px dashed var(--border)}
+.item:first-child{padding-top:0;border-top:0}
+.item:last-child{padding-bottom:0}
+.item .step{flex:0 0 auto}
+.item .body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px}
+.q{display:block;margin:0;font-weight:700;font-size:17px;line-height:28px}
+.q-sub{margin:-6px 0 0;font-size:14px;color:var(--text2)}
+.num{position:relative;max-width:320px}
+.num input{width:100%;min-height:52px;padding:0 54px 0 14px;border:1px solid var(--border2);border-radius:10px;background:#fff;color:var(--text);font:500 19px var(--sans);text-align:right;font-variant-numeric:tabular-nums}
+.num input:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.num .u{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:15px;pointer-events:none}
+.hint{margin:0;font-size:14px;color:var(--accent-dark);font-weight:500}
+
+.range-row{display:flex;align-items:center;gap:16px;max-width:520px}
+.range-row input[type=range]{flex:1 1 auto;accent-color:var(--accent);height:44px}
+.range-row output{flex:0 0 auto;min-width:72px;font:700 22px var(--sans);text-align:right;font-variant-numeric:tabular-nums}
+
+.big{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card2{padding:20px 22px;border-radius:14px;border:1px solid var(--border);background:var(--bg);min-width:0}
+.card2.me{background:var(--accent-light);border-color:#C9E0D3}
+.card2.warn{background:#FDF6EC;border-color:#F0DDBF}
+.card2 .lbl{display:block;font-size:15px;color:var(--text2)}
+.card2 .val{display:block;font-size:28px;font-weight:700;line-height:1.35;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.card2 .note{display:block;font-size:14px;color:var(--text2)}
+.card2 .note b{color:var(--text)}
+.plus{color:var(--accent-dark)}
+.minus{color:#B32B23}
+
+.say{margin:18px 0 0;padding:16px 18px;border-radius:12px;background:var(--bg);border:1px solid var(--border);font-size:15.5px;color:var(--text-body)}
+.say p{margin:0}
+.say p + p{margin-top:6px}
+.say b{color:var(--text);font-variant-numeric:tabular-nums}
+
+.chart{margin-top:26px}
+.chart h3,.full h3{margin:0 0 4px;font-size:17px}
+.chart .cap,.full .cap{margin:0 0 10px;font-size:14px;color:var(--text2)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0 0 8px;padding:0;list-style:none;font-size:13.5px;color:var(--text-body)}
+.legend li{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px}
+.chart-box svg{display:block;width:100%;height:auto}
+.chart-box text{font-family:var(--sans);font-variant-numeric:tabular-nums;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+
+.full{margin-top:26px}
+.tbl-wrap{position:relative;overflow-x:auto;-webkit-overflow-scrolling:touch;max-height:560px;overflow-y:auto;border:1px solid var(--border);border-radius:12px}
+.pn-tbl{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums}
+.pn-tbl th,.pn-tbl td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.pn-tbl thead th{position:sticky;top:0;z-index:1;font-weight:500;font-size:13.5px;color:var(--text2);background:var(--surface2)}
+.pn-tbl td.r{text-align:right}
+.pn-tbl tr.sel td{background:var(--accent-light);font-weight:700}
+.pn-tbl tr.flip td{border-top:2px solid var(--text)}
+.pn-tbl td.plus{color:var(--accent-dark)}
+.pn-tbl td.minus{color:#B32B23}
+
+details.calc{margin-top:22px}
+details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:6px 0}
+.calc-box{margin-top:8px;padding:18px 20px;border-radius:12px;background:var(--bg);border:1px solid var(--border);font-size:15px;color:var(--text-body)}
+.calc-box dl{margin:0;display:grid;gap:14px}
+.calc-box dt{font-weight:700;color:var(--text)}
+.calc-box dd{margin:2px 0 0}
+.calc-box code{font-family:var(--sans);font-weight:500;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:1px 7px;white-space:nowrap}
+
+.disc{margin-top:24px;padding:20px;border-radius:14px;background:#FFF9C7;border:1px solid #F2E27A}
+.disc p{margin:0;color:#3A3420}
+.disc p + p{margin-top:6px;font-size:14px}
+
+@media (max-width:640px){
+  .rn-hero{padding:40px 0 20px}
+  .rn-hero h1{font-size:30px}
+  .panel{padding:20px 16px}
+  .wrap.pn{padding:0 16px}
+  .card2 .val{font-size:24px}
+  .item{gap:10px}
+  .pn-tbl{font-size:13.5px}
+  .pn-tbl th,.pn-tbl td{padding:8px 9px}
+}
+
+.pair2{display:flex;flex-wrap:wrap;gap:10px}
+.pair2 .num{flex:1 1 200px}
+.num.wide input{padding-right:84px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:0 16px;border:1px solid var(--border2);border-radius:999px;background:#fff;color:var(--text);font:500 16px var(--sans);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--text);border-color:var(--text);color:#fff}
+.seg2{display:inline-flex;border:1px solid var(--border2);border-radius:10px;overflow:hidden;align-self:flex-start}
+.seg2 button{min-height:40px;padding:0 14px;border:0;background:#fff;color:var(--text2);font:500 14.5px var(--sans);cursor:pointer}
+.seg2 button[aria-pressed="true"]{background:var(--accent-light);color:var(--accent-dark);font-weight:700}
+.split{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;padding:12px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border);font-size:14.5px;color:var(--text-body)}
+.split b{color:var(--text);font-variant-numeric:tabular-nums}
+.split .bad{color:#B32B23}
+.charts2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:760px){.charts2{grid-template-columns:1fr}}
+.pn-tbl tr.end td{background:#FDF6EC}
+.cta{margin-top:20px;padding:18px 20px;border-radius:14px;background:var(--accent-light);border:1px solid #C9E0D3;font-size:15.5px}
+.cta p{margin:0}
+.cta a{font-weight:700;color:var(--accent-dark)}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+<div class="wrap">
+<a class="brand" href="/"><b>조성</b><span>josung.kr</span></a>
+<nav class="nav" aria-label="주 메뉴">
+<a href="/host/">Host</a>
+<a href="/#tools">계산기</a>
+<a href="/silson/">실손</a>
+<a href="/coverage/">보장분석</a>
+<a href="/#suremate">슈어메이트</a>
+<a href="/#contents">콘텐츠</a>
+<a href="/apply/">신청</a>
+</nav>
+</div>
+</header>
+
+<main>
+<section class="rn-hero">
+<div class="wrap pn">
+<p class="eyebrow">누구나 쓰는 계산기</p>
+<h1>통합보험, 언제부터 보험료를 더 낼까?</h1>
+<p class="lead">갱신형 특약 보험료를 적립금에서 대신 내주는(대체납입) 통합보험은 납입이 끝나도 갱신 보험료가 계속 빠져나가요. 적립금이 바닥나면 그때부터는 내 통장에서 따로 내야 해요. 그 시점을 미리 계산해 보세요.</p>
+</div>
+</section>
+
+<div class="wrap pn">
+
+<section class="panel" aria-label="입력">
+<ol class="items">
+<li class="item">
+<span class="step" aria-hidden="true">1</span>
+<div class="body">
+<label class="q" for="in-birth">생년월</label>
+<div class="num"><input id="in-birth" type="text" inputmode="numeric" autocomplete="off" maxlength="7" value="1980.05"><span class="u">년.월</span></div>
+<p class="hint" id="age-hint"></p>
+</div>
+</li>
+<li class="item">
+<span class="step" aria-hidden="true">2</span>
+<div class="body">
+<span class="q">계약일과 납입기간</span>
+<p class="q-sub">증권 맨 위 보험기간의 시작일이에요. 갱신은 계약일부터 갱신주기마다 돌아와요</p>
+<div class="pair2">
+<div class="num"><input id="in-start" type="text" inputmode="numeric" autocomplete="off" maxlength="7" value="2011.04" aria-label="계약일"><span class="u">년.월</span></div>
+<div class="num"><input id="in-pay" type="text" inputmode="numeric" autocomplete="off" maxlength="2" value="20" aria-label="납입기간"><span class="u">년납</span></div>
+</div>
+<p class="hint" id="pay-hint"></p>
+</div>
+</li>
+<li class="item">
+<span class="step" aria-hidden="true">3</span>
+<div class="body">
+<label class="q" for="in-prem">지금 매달 내는 보험료</label>
+<div class="num"><input id="in-prem" type="text" inputmode="numeric" autocomplete="off" value="100,000"><span class="u">원</span></div>
+</div>
+</li>
+<li class="item">
+<span class="step" aria-hidden="true">4</span>
+<div class="body">
+<span class="q">보험료 중 적립되는 돈</span>
+<p class="q-sub">증권에 ‘적립보험료’가 따로 적혀 있으면 그 금액을, 없으면 담보내용의 특약별 보험료를 모두 더한 금액을 넣어 주세요</p>
+<div class="seg2" role="group" aria-label="입력 방식"><button type="button" data-sv="1" aria-pressed="true">적립보험료를 알아요</button><button type="button" data-sv="0" aria-pressed="false">특약 보험료 합계로</button></div>
+<div class="num"><input id="in-sv" type="text" inputmode="numeric" autocomplete="off" value="10,000" aria-label="적립보험료"><span class="u">원</span></div>
+</div>
+</li>
+<li class="item">
+<span class="step" aria-hidden="true">5</span>
+<div class="body">
+<label class="q" for="in-ren">그중 갱신형 특약 보험료 합계</label>
+<p class="q-sub">담보내용에서 ‘갱신/대체’가 Y인 특약(대부분 실손의료비·입원일당)의 보험료를 더해 주세요</p>
+<div class="num"><input id="in-ren" type="text" inputmode="numeric" autocomplete="off" value="35,000"><span class="u">원</span></div>
+<p class="split" id="split"></p>
+</div>
+</li>
+<li class="item">
+<span class="step" aria-hidden="true">6</span>
+<div class="body">
+<label class="q" for="in-fund">지금 쌓인 적립금</label>
+<p class="q-sub">보험사 앱·콜센터에서 조회되는 ‘중도인출 가능금액’(적립부분 적립금)이에요. 해지환급금은 보장부분 환급금까지 합친 금액이라 더 커요 — 넣으면 안 돼요</p>
+<div class="num"><input id="in-fund" type="text" inputmode="numeric" autocomplete="off" value="500"><span class="u">만 원</span></div>
+</div>
+</li>
+<li class="item">
+<span class="step" aria-hidden="true">7</span>
+<div class="body">
+<span class="q">갱신 조건</span>
+<p class="q-sub">갱신주기와 갱신이 끝나는 나이는 담보내용·증권에 나와요(예: 3년만기, 갱신종료 100세)</p>
+<div class="pair2">
+<div class="num wide"><input id="in-cyc" type="text" inputmode="numeric" autocomplete="off" maxlength="2" value="3" aria-label="갱신주기"><span class="u">년마다</span></div>
+<div class="num wide"><input id="in-endage" type="text" inputmode="numeric" autocomplete="off" maxlength="3" value="100" aria-label="갱신종료 나이"><span class="u">세 종료</span></div>
+</div>
+<span class="q" style="font-size:15.5px;margin-top:6px">갱신 때 보험료 인상률 (1년 기준)</span>
+<div class="chips" role="group" aria-label="연 인상률" id="rate-chips"><button type="button" class="chip" data-r="0" aria-pressed="false">0%</button><button type="button" class="chip" data-r="3" aria-pressed="false">3%</button><button type="button" class="chip" data-r="5" aria-pressed="true">5%</button><button type="button" class="chip" data-r="7" aria-pressed="false">7%</button><button type="button" class="chip" data-r="10" aria-pressed="false">10%</button></div>
+<p class="hint" id="rate-hint"></p>
+</div>
+</li>
+</ol>
+</section>
+
+<section class="panel" aria-labelledby="h-res" aria-live="polite">
+<h2 id="h-res">계산 결과</h2>
+<p class="sub">인상률은 가정이에요. 실제 갱신 보험료는 나이·손해율에 따라 해마다 달라요.</p>
+<div id="result"></div>
+
+<div class="cta"><p>적립금이 바닥나는 시점이 걱정되면, 실손 전환이나 특약 정리로 미리 늦출 수 있어요. <a href="/apply/">보험 점검 상담 신청 →</a></p></div>
+
+<div class="disc">
+<p><b>보험사가 계산해 주는 금액이 아니라, 넣은 숫자로 추정해 보는 계산기예요.</b> 실제 적립금과 갱신 보험료는 보험사에서 꼭 확인하세요.</p>
+<p>적립금에 붙는 이자(공시이율)는 넣지 않았어요 — 이자가 붙으면 바닥나는 시점이 조금 늦어져요. 중도인출을 하거나 보험료를 미납하면 더 빨라져요. 상품에 따라 납입이 끝난 뒤 처리 방식이 다를 수 있어요.</p>
+</div>
+<p class="muted" style="margin:16px 0 0;font-size:13px">입력한 숫자는 이 브라우저 안에서만 계산되고 어디에도 저장·전송되지 않아요.</p>
+</section>
+
+</div>
+</main>
+
+<a class="kakao-fab" href="https://pf.kakao.com/_ewmWX/chat" target="_blank" rel="noopener" aria-label="카카오톡으로 바로 채팅하기"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.5c-5 0-9 3.1-9 7 0 2.5 1.7 4.7 4.2 5.9l-.9 3.4c-.1.3.3.6.6.4l4-2.6h1.1c5 0 9-3.1 9-7s-4-7.1-9-7.1z"/></svg><span>카톡 상담</span></a>
+
+<footer class="site-footer">
+<div class="wrap">
+<p class="bye">즐겁게 놀다 가셨길. 또 오세요.</p>
+<div class="legal">
+<span>별재무설계 · 대표 조성 · 사업자등록번호 142-09-64413</span>
+<span><a href="/privacy/">개인정보처리방침</a></span>
+</div>
+</div>
+</footer>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var box = $('result'), RATE = 5, SVMODE = 1;
+  var TODAY = (function () { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
+
+  function digits(el) { return Number(String(el.value).replace(/[^\d]/g, '')) || 0; }
+  function ym(el) {                                   // "1984.09" / "198409" → Date(1일)
+    var m = String(el.value).replace(/\s/g, '').match(/^(\d{4})[.\-\/]?(\d{1,2})$/);
+    if (!m || +m[2] < 1 || +m[2] > 12) return null;
+    return new Date(+m[1], +m[2] - 1, 1);
+  }
+  function addM(d, n) { return new Date(d.getFullYear(), d.getMonth() + n, 1); }
+  function mdiff(a, b) { return (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth(); }
+  function ageAt(birth, d) { return Math.floor(mdiff(birth, d) / 12); }
+  function ymTxt(d) { return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월'; }
+  function won(n) { return Math.round(n).toLocaleString('ko-KR') + '원'; }
+  function man(n) {                                  // 원 → "1억 2,345만"
+    if (Math.round(Math.abs(n) / 10000) === 0) return Math.abs(n) < 1 ? '0원' : '1만 원 미만';
+    var v = Math.round(Math.abs(n) / 10000), eok = Math.floor(v / 10000), rest = v % 10000, s = '';
+    if (eok) s += eok + '억' + (rest ? ' ' : '');
+    if (rest || !eok) s += rest.toLocaleString('ko-KR') + '만';
+    return s + ' 원';
+  }
+  function manM(n) { var v = n / 10000; return (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10).toLocaleString('ko-KR') + '만'; }
+
+  /* ---------- 계산 ----------
+     납입기간: 매달 보험료(고정)를 냄 → 비갱신 특약 보험료를 빼고 남은 돈이 적립금으로 들어가고, 갱신형 특약 보험료는 적립금에서 빠짐
+     납입 끝: 들어오는 돈은 없고 갱신형 특약 보험료만 적립금에서 빠짐
+     적립금이 모자라면: 모자란 만큼을 따로 냄 (추가 납입)
+     갱신 보험료: 계약일부터 갱신주기마다 (1 + 연 인상률 × 갱신주기)배. 지금 보험료가 출발점 */
+  function simulate(p) {
+    var cover = p.cover, fund = p.fund, rows = [], extraAt = null, payEndAt = addM(p.start, p.pay * 12), renEnd = addM(p.birth, p.endAge * 12);
+    var k0 = Math.floor(mdiff(p.start, TODAY) / 12 / p.cyc), mult = 1 + RATE / 100 * p.cyc, totalExtra = 0, fundAtPayEnd = null;
+    for (var m = 0; m < 1300; m++) {
+      var d = addM(TODAY, m);
+      if (d >= renEnd && d >= payEndAt) break;
+      var inPay = d < payEndAt, k = Math.floor(mdiff(p.start, d) / 12 / p.cyc) - k0;
+      var ren = d < renEnd ? p.ren * Math.pow(mult, Math.max(0, k)) : 0;
+      var inflow = inPay ? p.prem : 0;
+      fund += inflow - (inPay ? cover : 0) - ren;
+      var out = inflow, extra = 0;
+      if (fund < 0) { extra = -fund; out += extra; fund = 0; if (!extraAt) extraAt = d; }
+      totalExtra += extra;
+      if (!inPay && fundAtPayEnd == null) fundAtPayEnd = rows.length ? rows[rows.length - 1].fund : fund;
+      rows.push({ d: d, ren: ren, out: out, extra: extra, fund: fund, inPay: inPay });
+    }
+    return { rows: rows, extraAt: extraAt, payEndAt: payEndAt, renEnd: renEnd, totalExtra: totalExtra, fundAtPayEnd: fundAtPayEnd };
+  }
+
+  /* ---------- 차트 ---------- */
+  function niceStep(max, n) {
+    var raw = max / n || 1, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+    return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p;
+  }
+  function lineChart(rows, birth, key, color, label, fill, marks) {
+    var narrow = (box.clientWidth || 640) < 700;
+    var W = narrow ? 380 : 440, H = 240, L = 50, R = 12, T = 14, Bm = 28, iw = W - L - R, ih = H - T - Bm;
+    var a0 = mdiff(birth, rows[0].d) / 12, a1 = mdiff(birth, rows[rows.length - 1].d) / 12;
+    if (a1 - a0 < 1) a1 = a0 + 1;
+    var top = 0; rows.forEach(function (r) { top = Math.max(top, r[key]); });
+    var ys = niceStep(top || 10000, 4); top = Math.max(ys, Math.ceil(top / ys) * ys);
+    function X(a) { return L + (a - a0) / (a1 - a0) * iw; }
+    function Y(v) { return T + ih - v / top * ih; }
+    var g = '';
+    for (var v = 0; v <= top + 1e-6; v += ys) {
+      g += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '" stroke="#E2DDD6"/>';
+      g += '<text x="' + (L - 6) + '" y="' + (Y(v) + 4).toFixed(1) + '" text-anchor="end" font-size="11.5" fill="#5C554D">' + (v ? manM(v) : '0') + '</text>';
+    }
+    var st = (a1 - a0) > 40 ? 10 : 5;
+    for (var a = Math.ceil(a0 / st) * st; a <= a1; a += st) g += '<text x="' + X(a).toFixed(1) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11.5" fill="#5C554D">' + a + '세</text>';
+    (marks || []).forEach(function (mk) {
+      if (!mk.d) return; var a = mdiff(birth, mk.d) / 12; if (a < a0 || a > a1) return;
+      g += '<line x1="' + X(a).toFixed(1) + '" x2="' + X(a).toFixed(1) + '" y1="' + T + '" y2="' + (T + ih) + '" stroke="' + mk.c + '" stroke-width="1.2" stroke-dasharray="4 4"/>';
+      g += '<text x="' + (X(a) + (X(a) > W - 80 ? -5 : 5)).toFixed(1) + '" y="' + (T + 12 + (mk.dy || 0)) + '" text-anchor="' + (X(a) > W - 80 ? 'end' : 'start') + '" font-size="11.5" font-weight="700" fill="' + mk.c + '">' + mk.t + '</text>';
+    });
+    var d = '', prev = null;
+    rows.forEach(function (r, i) {
+      var x = X(mdiff(birth, r.d) / 12).toFixed(1), y = Y(r[key]).toFixed(1);
+      d += (i ? (prev !== null ? 'L' + x + ' ' + prev + 'L' : 'L') : 'M') + x + ' ' + y; prev = y;     // 계단 모양
+    });
+    var area = fill ? '<path d="' + d + 'L' + X(a1).toFixed(1) + ' ' + Y(0).toFixed(1) + 'L' + X(a0).toFixed(1) + ' ' + Y(0).toFixed(1) + 'Z" fill="' + color + '" fill-opacity=".12"/>' : '';
+    return '<div class="chart-box"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + label + '">' + g + area + '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="2.2" stroke-linejoin="round"/></svg></div>';
+  }
+
+  /* ---------- 그리기 ---------- */
+  function render() {
+    var birth = ym($('in-birth')), start = ym($('in-start')), pay = digits($('in-pay'));
+    var prem = digits($('in-prem')), sv = digits($('in-sv')), ren = digits($('in-ren')), fund = digits($('in-fund')) * 10000;
+    var cyc = digits($('in-cyc')) || 3, endAge = digits($('in-endage')) || 100;
+    $('age-hint').textContent = birth && birth < TODAY ? '지금 만 ' + ageAt(birth, TODAY) + '세' : '1984.09 처럼 넣어 주세요';
+    var payEndAt = start && pay ? addM(start, pay * 12) : null;
+    $('pay-hint').textContent = !start ? '2010.07 처럼 넣어 주세요' : payEndAt ? '납입 끝: ' + ymTxt(addM(payEndAt, -1)) + ' 회차까지' + (birth ? ' (만 ' + ageAt(birth, payEndAt) + '세)' : '') + (payEndAt <= TODAY ? ' · 이미 납입 완료' : '') : '';
+    $('rate-hint').textContent = '갱신 한 번에 ' + (RATE * cyc) + '%씩 올라요 (연 ' + RATE + '% × ' + cyc + '년)';
+    var cover = SVMODE ? prem - sv - ren : sv - ren, saving = SVMODE ? sv : prem - sv;
+    var sp = $('split');
+    if (prem && (sv || !SVMODE)) {
+      sp.innerHTML = cover < 0 || saving < 0 ? '<span class="bad">숫자가 맞지 않아요: 갱신형 특약 보험료가 ' + (SVMODE ? '월 보험료 − 적립보험료' : '특약 보험료 합계') + '보다 커요.</span>'
+        : '<span>월 ' + won(prem) + ' =</span><span>비갱신 특약 <b>' + won(cover) + '</b></span><span>+ 갱신형 특약 <b>' + won(ren) + '</b></span><span>+ 적립 <b>' + won(saving) + '</b></span>';
+    } else sp.innerHTML = '';
+    if (!birth || !start || !pay || !prem || !ren || cover < 0 || saving < 0 || start > TODAY) { box.innerHTML = '<div class="say"><p>1~6번을 모두 넣으면 결과가 나와요.</p></div>'; return; }
+
+    var r = simulate({ birth: birth, start: start, pay: pay, prem: prem, cover: cover, ren: ren, fund: fund, cyc: cyc, endAge: endAge });
+    if (!r.rows.length) { box.innerHTML = '<div class="say"><p>갱신이 이미 끝난 계약이에요.</p></div>'; return; }
+    var ex = r.extraAt, exRow = ex ? r.rows.filter(function (x) { return +x.d === +ex; })[0] : null;
+    var exYearRow = ex ? r.rows.filter(function (x) { return x.d >= addM(ex, 1) && x.extra > 0; })[0] || exRow : null;
+    var h = '<div class="big">';
+    if (ex) {
+      h += '<div class="card2 warn"><span class="lbl">보험료를 따로 더 내기 시작</span><span class="val minus">만 ' + ageAt(birth, ex) + '세</span><span class="note">' + ymTxt(ex) + '부터 · ' + (ex < r.payEndAt ? '<b>납입기간 중</b>에 적립금이 바닥나요' : '납입이 끝나고 ' + Math.round(mdiff(r.payEndAt, ex) / 12 * 10) / 10 + '년 뒤') + '</span></div>';
+      h += '<div class="card2"><span class="lbl">그때 매달 따로 내는 돈</span><span class="val">약 ' + manM(exYearRow.extra) + ' 원</span><span class="note">' + (ex < r.payEndAt ? '월 보험료 ' + won(prem) + '에 더해서' : '갱신형 특약 보험료 거의 전부') + '</span></div>';
+      h += '<div class="card2"><span class="lbl">갱신 종료(' + endAge + '세)까지 따로 낼 돈</span><span class="val">' + man(r.totalExtra) + '</span><span class="note">연 ' + RATE + '% 인상 가정, 모두 합친 금액</span></div>';
+    } else {
+      h += '<div class="card2 me"><span class="lbl">따로 더 낼 돈</span><span class="val plus">없어요</span><span class="note">갱신 종료(' + endAge + '세)까지 적립금으로 충당돼요</span></div>';
+      var last = r.rows[r.rows.length - 1];
+      h += '<div class="card2"><span class="lbl">갱신이 끝날 때 남는 적립금</span><span class="val">' + man(last.fund) + '</span><span class="note">연 ' + RATE + '% 인상 가정</span></div>';
+    }
+    h += '</div>';
+
+    var nowAge = ageAt(birth, TODAY), peAge = ageAt(birth, r.payEndAt);
+    h += '<div class="say">';
+    if (r.payEndAt > TODAY) h += '<p>납입이 끝나는 <b>' + ymTxt(r.payEndAt) + '(만 ' + peAge + '세)</b>까지는 매달 <b>' + won(prem) + '</b>을 그대로 내요. 갱신 때 오르는 보험료는 적립금에서 빠져서 내 통장에서 나가는 돈은 같아요.</p>';
+    if (r.fundAtPayEnd != null) h += '<p>납입이 끝날 때 적립금은 약 <b>' + man(r.fundAtPayEnd) + '</b>' + (r.payEndAt > TODAY ? '으로 예상돼요' : '이었어요') + '. 그 뒤로는 들어오는 돈 없이 갱신 보험료만 빠져나가요.</p>';
+    if (ex) h += '<p>적립금이 바닥나는 <b>' + ymTxt(ex) + '(만 ' + ageAt(birth, ex) + '세)</b>부터는 갱신형 특약 보험료를 <b>직접</b> 내야 해요. 나이가 들수록 갱신 보험료가 오르니, 그 전에 실손 전환이나 특약 정리를 검토해 보세요.</p>';
+    h += '</div>';
+
+    var mk = [{ d: r.payEndAt > TODAY ? r.payEndAt : null, t: '납입 끝', c: '#5C554D' }, { d: ex, t: '추가 납입 시작', c: '#B32B23', dy: 16 }];
+    h += '<div class="charts2">';
+    h += '<div class="chart"><h3>내 통장에서 매달 나가는 돈</h3><p class="cap">납입 중엔 월 보험료 그대로, 납입 끝엔 0원, 적립금이 바닥나면 다시 올라가요.</p>' + lineChart(r.rows, birth, 'out', '#B32B23', '매달 내는 돈', false, mk) + '</div>';
+    h += '<div class="chart"><h3>적립금 잔액</h3><p class="cap">납입 중에 쌓이다가, 납입이 끝나면 갱신 보험료로 줄어들어요.</p>' + lineChart(r.rows, birth, 'fund', '#1A6B4A', '적립금 잔액', true, mk) + '</div>';
+    h += '</div>';
+
+    // 갱신 시점 표
+    h += '<div class="full"><h3>갱신 때마다 한눈에 보기</h3><p class="cap">갱신 달 기준, 연 ' + RATE + '% × ' + cyc + '년 인상 가정. 색칠된 줄부터 따로 더 내요.</p>';
+    h += '<div class="tbl-wrap"><table class="pn-tbl"><thead><tr><th>갱신</th><th>나이</th><th class="r">갱신형 특약 보험료</th><th class="r">내가 내는 돈(월)</th><th class="r">적립금</th></tr></thead><tbody>';
+    var shown = {};
+    r.rows.forEach(function (x, i) {
+      var isRen = (mdiff(start, x.d) % (cyc * 12) === 0), isFirst = i === 0, isPE = +x.d === +r.payEndAt, isEx = ex && +x.d === +ex;
+      if (!(isRen || isFirst || isPE || isEx)) return;
+      var tag = isFirst ? '지금' : isEx ? '바닥' : isPE ? '납입 끝' : '';
+      h += '<tr' + (x.extra > 0 ? ' class="end"' : '') + '><td>' + ymTxt(x.d) + (tag ? ' · <b>' + tag + '</b>' : '') + '</td><td>' + ageAt(birth, x.d) + '세</td><td class="r">' + won(x.ren) + '</td><td class="r' + (x.extra > 0 ? ' minus' : '') + '">' + won(x.out) + '</td><td class="r">' + man(x.fund) + '</td></tr>';
+    });
+    h += '</tbody></table></div></div>';
+
+    h += '<details class="calc"><summary>어떻게 계산했나요?</summary><div class="calc-box"><dl>';
+    h += '<dt>월 보험료 나누기</dt><dd><code>월 보험료 = 비갱신 특약 + 갱신형 특약 + 적립보험료</code>. 비갱신 특약 보험료는 납입기간 동안 그대로예요.</dd>';
+    h += '<dt>납입기간 중</dt><dd>매달 <code>월 보험료 − 비갱신 특약 − 그달 갱신형 특약 보험료</code>가 적립금에 더해져요. 갱신으로 보험료가 오르면 쌓이는 돈이 줄고, 갱신 보험료가 더 커지면 적립금이 줄어요.</dd>';
+    h += '<dt>납입이 끝난 뒤</dt><dd>들어오는 돈은 없고, 매달 갱신형 특약 보험료가 적립금에서 빠져요. 적립금이 모자라면 모자란 만큼을 따로 내요(추가 납입).</dd>';
+    h += '<dt>갱신 보험료</dt><dd>계약일부터 ' + cyc + '년마다 <code>× (1 + ' + RATE + '% × ' + cyc + ')</code>. 지금 내는 갱신형 특약 보험료가 출발점이에요. 갱신 종료 나이가 지나면 그 특약은 끝나요.</dd>';
+    h += '<dt>넣지 않은 것</dt><dd>적립금 이자(공시이율), 해지·감액, 중도인출, 갱신 때 나이·손해율에 따른 실제 인상 폭. 실손보험은 해마다 인상률이 달라요.</dd>';
+    h += '</dl></div></details>';
+
+    box.innerHTML = h;
+  }
+  function fmtMoney(el) { var raw = String(el.value).replace(/[^\d]/g, ''); el.value = raw ? Number(raw).toLocaleString('ko-KR') : ''; }
+  ['in-prem', 'in-sv', 'in-ren', 'in-fund'].forEach(function (id) { $(id).addEventListener('input', function () { fmtMoney(this); render(); }); });
+  ['in-birth', 'in-start', 'in-pay', 'in-cyc', 'in-endage'].forEach(function (id) { $(id).addEventListener('input', render); });
+  $('rate-chips').addEventListener('click', function (e) {
+    var b = e.target.closest('.chip'); if (!b) return; RATE = +b.dataset.r;
+    this.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render();
+  });
+  document.querySelector('.seg2').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; SVMODE = +b.dataset.sv;
+    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    $('in-sv').setAttribute('aria-label', SVMODE ? '적립보험료' : '특약 보험료 합계'); render();
+  });
+  var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(render, 150); });
+  render();
+})();
+</script>
+<script data-goatcounter="https://josung.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+</body>
+</html>
