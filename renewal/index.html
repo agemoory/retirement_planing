@@ -110,7 +110,7 @@ details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:
 .seg2{display:inline-flex;border:1px solid var(--border2);border-radius:10px;overflow:hidden;align-self:flex-start}
 .seg2 button{min-height:40px;padding:0 14px;border:0;background:#fff;color:var(--text2);font:500 14.5px var(--sans);cursor:pointer}
 .seg2 button[aria-pressed="true"]{background:var(--accent-light);color:var(--accent-dark);font-weight:700}
-.split{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;padding:12px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border);font-size:14.5px;color:var(--text-body)}
+.split{display:block;margin:0;line-height:1.7;padding:12px 14px;border-radius:10px;background:var(--bg);border:1px solid var(--border);font-size:14.5px;color:var(--text-body)}
 .split b{color:var(--text);font-variant-numeric:tabular-nums}
 .split .bad{color:#B32B23}
 .charts2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
@@ -174,24 +174,23 @@ details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:
 <li class="item">
 <span class="step" aria-hidden="true">3</span>
 <div class="body">
-<label class="q" for="in-prem">지금 매달 내는 보험료</label>
+<label class="q" for="in-prem">총보험료 (지금 매달 내는 돈)</label>
 <div class="num"><input id="in-prem" type="text" inputmode="numeric" autocomplete="off" value="100,000"><span class="u">원</span></div>
 </div>
 </li>
 <li class="item">
 <span class="step" aria-hidden="true">4</span>
 <div class="body">
-<span class="q">보험료 중 적립되는 돈</span>
-<p class="q-sub">증권에 ‘적립보험료’가 따로 적혀 있으면 그 금액을, 없으면 담보내용의 특약별 보험료를 모두 더한 금액을 넣어 주세요</p>
-<div class="seg2" role="group" aria-label="입력 방식"><button type="button" data-sv="1" aria-pressed="true">적립보험료를 알아요</button><button type="button" data-sv="0" aria-pressed="false">특약 보험료 합계로</button></div>
-<div class="num"><input id="in-sv" type="text" inputmode="numeric" autocomplete="off" value="10,000" aria-label="적립보험료"><span class="u">원</span></div>
+<label class="q" for="in-sv">적립보험료 총액</label>
+<p class="q-sub">증권의 총보험료 = 보장보험료 + 적립보험료 중 ‘적립보험료’예요</p>
+<div class="num"><input id="in-sv" type="text" inputmode="numeric" autocomplete="off" value="10,000"><span class="u">원</span></div>
 </div>
 </li>
 <li class="item">
 <span class="step" aria-hidden="true">5</span>
 <div class="body">
-<label class="q" for="in-ren">그중 갱신형 특약 보험료 합계</label>
-<p class="q-sub">담보내용에서 ‘갱신/대체’가 Y인 특약(대부분 실손의료비·입원일당)의 보험료를 더해 주세요</p>
+<label class="q" for="in-ren">갱신보험료 총액</label>
+<p class="q-sub">갱신형 특약들의 보험료를 모두 더한 금액이에요 (담보내용에서 ‘갱신/대체’가 Y인 특약)</p>
 <div class="num"><input id="in-ren" type="text" inputmode="numeric" autocomplete="off" value="35,000"><span class="u">원</span></div>
 <p class="split" id="split"></p>
 </div>
@@ -253,7 +252,7 @@ details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var box = $('result'), RATE = 5, SVMODE = 1;
+  var box = $('result'), RATE = 5;
   var TODAY = (function () { var d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
 
   function digits(el) { return Number(String(el.value).replace(/[^\d]/g, '')) || 0; }
@@ -344,11 +343,11 @@ details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:
     var payEndAt = start && pay ? addM(start, pay * 12) : null;
     $('pay-hint').textContent = !start ? '2010.07 처럼 넣어 주세요' : payEndAt ? '납입 끝: ' + ymTxt(addM(payEndAt, -1)) + ' 회차까지' + (birth ? ' (만 ' + ageAt(birth, payEndAt) + '세)' : '') + (payEndAt <= TODAY ? ' · 이미 납입 완료' : '') : '';
     $('rate-hint').textContent = '갱신 한 번에 ' + (RATE * cyc) + '%씩 올라요 (연 ' + RATE + '% × ' + cyc + '년)';
-    var cover = SVMODE ? prem - sv - ren : sv - ren, saving = SVMODE ? sv : prem - sv;
+    var cover = prem - sv - ren, saving = sv;
     var sp = $('split');
-    if (prem && (sv || !SVMODE)) {
-      sp.innerHTML = cover < 0 || saving < 0 ? '<span class="bad">숫자가 맞지 않아요: 갱신형 특약 보험료가 ' + (SVMODE ? '월 보험료 − 적립보험료' : '특약 보험료 합계') + '보다 커요.</span>'
-        : '<span>월 ' + won(prem) + ' =</span><span>비갱신 특약 <b>' + won(cover) + '</b></span><span>+ 갱신형 특약 <b>' + won(ren) + '</b></span><span>+ 적립 <b>' + won(saving) + '</b></span>';
+    if (prem && ren) {
+      sp.innerHTML = cover < 0 ? '<span class="bad">숫자가 맞지 않아요: 적립보험료 + 갱신보험료가 총보험료보다 커요.</span>'
+        : '총보험료 ' + won(prem) + ' = 비갱신 특약 <b>' + won(cover) + '</b> + 갱신 특약 <b>' + won(ren) + '</b> + 적립 <b>' + won(saving) + '</b>';
     } else sp.innerHTML = '';
     if (!birth || !start || !pay || !prem || !ren || cover < 0 || saving < 0 || start > TODAY) { box.innerHTML = '<div class="say"><p>1~6번을 모두 넣으면 결과가 나와요.</p></div>'; return; }
 
@@ -394,7 +393,7 @@ details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:
     h += '</tbody></table></div></div>';
 
     h += '<details class="calc"><summary>어떻게 계산했나요?</summary><div class="calc-box"><dl>';
-    h += '<dt>월 보험료 나누기</dt><dd><code>월 보험료 = 비갱신 특약 + 갱신형 특약 + 적립보험료</code>. 비갱신 특약 보험료는 납입기간 동안 그대로예요.</dd>';
+    h += '<dt>총보험료 나누기</dt><dd><code>총보험료 = 비갱신 특약 + 갱신 특약 + 적립보험료</code>. 비갱신 특약 보험료(총보험료 − 적립 − 갱신)는 납입기간 동안 그대로예요.</dd>';
     h += '<dt>납입기간 중</dt><dd>매달 <code>월 보험료 − 비갱신 특약 − 그달 갱신형 특약 보험료</code>가 적립금에 더해져요. 갱신으로 보험료가 오르면 쌓이는 돈이 줄고, 갱신 보험료가 더 커지면 적립금이 줄어요.</dd>';
     h += '<dt>납입이 끝난 뒤</dt><dd>들어오는 돈은 없고, 매달 갱신형 특약 보험료가 적립금에서 빠져요. 적립금이 모자라면 모자란 만큼을 따로 내요(추가 납입).</dd>';
     h += '<dt>갱신 보험료</dt><dd>계약일부터 ' + cyc + '년마다 <code>× (1 + ' + RATE + '% × ' + cyc + ')</code>. 지금 내는 갱신형 특약 보험료가 출발점이에요. 갱신 종료 나이가 지나면 그 특약은 끝나요.</dd>';
@@ -409,11 +408,6 @@ details.calc summary{cursor:pointer;color:var(--accent);font-weight:500;padding:
   $('rate-chips').addEventListener('click', function (e) {
     var b = e.target.closest('.chip'); if (!b) return; RATE = +b.dataset.r;
     this.querySelectorAll('.chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render();
-  });
-  document.querySelector('.seg2').addEventListener('click', function (e) {
-    var b = e.target.closest('button'); if (!b) return; SVMODE = +b.dataset.sv;
-    this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
-    $('in-sv').setAttribute('aria-label', SVMODE ? '적립보험료' : '특약 보험료 합계'); render();
   });
   var rt; window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(render, 150); });
   render();
