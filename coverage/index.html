@@ -132,6 +132,9 @@
 .rt .cat-cell{display:inline-flex;align-items:center;gap:8px}
 .empty-note{padding:18px;text-align:center;color:var(--text2);font-size:15px}
 .privacy-note{margin:14px 0 0;font-size:13px;color:var(--text2)}
+.save-msg{margin:8px 0 12px;font-size:13px;font-weight:600;color:var(--accent)}
+.save-msg.err{color:#C8322A}
+body.drop-on .cv{outline:3px dashed var(--accent);outline-offset:6px;border-radius:12px}
 #print-img{display:none}
 
 @media (max-width:640px){
@@ -187,6 +190,8 @@
 <div class="panel-head">
 <div><h2 id="h-info">1. 고객 정보</h2><p>차트 이미지 상단에 들어갑니다. 비워둬도 괜찮아요.</p></div>
 <div class="tools-row">
+<button type="button" class="btn btn-line btn-sm" id="btn-open">저장 파일 불러오기</button>
+<input type="file" id="file-open" accept=".json,application/json" hidden>
 <button type="button" class="btn btn-ghost btn-sm" id="btn-sample">예시로 채워보기</button>
 <button type="button" class="btn btn-ghost btn-sm" id="btn-reset">모두 지우기</button>
 </div>
@@ -245,8 +250,10 @@
 <div class="actions">
 <button type="button" class="btn btn-primary" id="btn-png">차트 이미지로 저장</button>
 <button type="button" class="btn btn-ghost" id="btn-print">인쇄 · PDF로 저장</button>
+<button type="button" class="btn btn-ghost" id="btn-save">입력 내용 파일로 저장</button>
 </div>
-<p class="privacy-note">입력한 내용은 이 브라우저 안에서만 계산되고 어디에도 저장·전송되지 않습니다. 페이지를 새로 고치면 사라지니, 필요하면 이미지로 저장해두세요.</p>
+<p class="privacy-note">입력한 내용은 이 브라우저 안에서만 계산되고 어디에도 전송되지 않습니다. 페이지를 새로 고치면 사라지니, <b>입력 내용 파일로 저장</b>을 눌러 내 기기에 파일(.json)로 받아두세요. 나중에 위 <b>저장 파일 불러오기</b>로 열면(또는 파일을 이 페이지에 끌어다 놓으면) 이어서 볼 수 있어요.</p>
+<p class="save-msg" id="save-msg" role="status" hidden></p>
 
 <div class="rt-head">
 <h3>담보별 비교표</h3>
@@ -628,6 +635,105 @@
         vLia: 10000, vSet: 20000, vFine: 2000, vLaw: 3000, vInj: 30, sDmax: 500, sDmin: 30, sAmax: 500, sAmin: 30, sNmax: 1000, sNmin: 100,
         oFx: 20, oCast: 10, oBurn: 20 }) };
     syncInfo(); buildGrid();
+  });
+
+  /* ---------- 파일로 저장 · 불러오기 ----------
+     담보는 번호가 아니라 id로 저장 → 나중에 담보가 추가·순서가 바뀌어도 예전 파일을 그대로 열 수 있음 */
+  var FILE_APP = 'josung.kr/coverage', FILE_VER = 1;
+  function toMap(arr) { var m = {}; ITEMS.forEach(function (it, i) { if (arr[i]) m[it.id] = arr[i]; }); return m; }
+  function stdMap() { var m = {}; ITEMS.forEach(function (it, i) { if (S.std[i] !== it.std) m[it.id] = S.std[i]; }); return m; }
+  function exportState() {
+    return {
+      app: FILE_APP, version: FILE_VER, saved: new Date().toISOString(),
+      info: S.info,
+      std: stdMap(),   // 기본 표준금액과 다르게 고친 담보만
+      ex: S.ex.map(function (e) { return { name: e.name, keep: e.keep, prem: e.prem, amt: toMap(e.amt) }; }),
+      nw: { name: S.nw.name, prem: S.nw.prem, amt: toMap(S.nw.amt) },
+      off: Object.keys(S.off).filter(function (c) { return S.off[c]; }).map(function (c) { return CATS[c].name; })
+    };
+  }
+  function importState(d) {
+    if (!d || d.app !== FILE_APP) throw new Error('not ours');
+    var lost = 0;
+    function fromMap(m) {
+      var a = zeros();
+      Object.keys(m || {}).forEach(function (k) {
+        var v = +m[k] || 0;
+        if (IDX[k] != null) a[IDX[k]] = v; else if (v) lost++;
+      });
+      return a;
+    }
+    var st = blankState();
+    Object.keys(st.info).forEach(function (k) { if (d.info && d.info[k] != null) st.info[k] = d.info[k]; });
+    st.info.driver = !(d.info && d.info.driver === false);
+    Object.keys(d.std || {}).forEach(function (k) { if (IDX[k] != null) st.std[IDX[k]] = +d.std[k] || 0; });
+    if (Array.isArray(d.ex) && d.ex.length) {
+      st.ex = d.ex.slice(0, MAX_EX).map(function (e, i) {
+        return { name: e.name || ('기존 ' + (i + 1)), keep: e.keep !== false, prem: +e.prem || 0, amt: fromMap(e.amt) };
+      });
+    }
+    if (d.nw) st.nw = { name: d.nw.name || '신규 제안', prem: +d.nw.prem || 0, amt: fromMap(d.nw.amt) };
+    if (Array.isArray(d.off)) {
+      st.off = {};
+      d.off.forEach(function (n) { CATS.forEach(function (c, i) { if (c.name === n) st.off[i] = true; }); });
+    }
+    return { state: st, lost: lost };
+  }
+  function hasInput() {
+    return Object.keys(S.info).some(function (k) { return k !== 'driver' && S.info[k]; }) ||
+      S.ex.concat([S.nw]).some(function (c) { return c.prem || c.amt.some(function (v) { return v; }); });
+  }
+  var saveMsg = document.getElementById('save-msg'), msgTimer;
+  function showMsg(t, err) {
+    saveMsg.textContent = t; saveMsg.className = 'save-msg' + (err ? ' err' : ''); saveMsg.hidden = false;
+    clearTimeout(msgTimer); msgTimer = setTimeout(function () { saveMsg.hidden = true; }, 6000);
+  }
+  function stamp() {
+    var t = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return t.getFullYear() + p(t.getMonth() + 1) + p(t.getDate()) + '_' + p(t.getHours()) + p(t.getMinutes());
+  }
+  document.getElementById('btn-save').addEventListener('click', function () {
+    var who = (S.info.client || '').trim().replace(/[\\/:*?"<>|\s]+/g, '') || '고객';
+    var blob = new Blob([JSON.stringify(exportState(), null, 1)], { type: 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = '보장분석_' + who + '_' + stamp() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    scrollMsg(false); showMsg('파일로 저장했어요. 다운로드 폴더를 확인하세요.');
+  });
+  function openFile(file) {
+    if (!file) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      var r;
+      try { r = importState(JSON.parse(rd.result)); }
+      catch (e) { showMsg('이 페이지에서 저장한 보장분석 파일(.json)이 아니에요.', true); scrollMsg(); return; }
+      if (hasInput() && !window.confirm('지금 입력한 내용이 불러온 파일 내용으로 바뀌어요. 계속할까요?')) return;
+      S = r.state; syncInfo(); buildGrid();
+      showMsg('‘' + file.name + '’을 불러왔어요.' + (r.lost ? ' (지금은 없는 담보 ' + r.lost + '개는 빠졌어요)' : ''));
+      document.getElementById('h-info').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollMsg(true);
+    };
+    rd.readAsText(file);
+  }
+  // 불러오기 안내는 위쪽(고객 정보) 버튼 근처에서 보이도록 잠깐 옮겨 표시
+  function scrollMsg(top) {
+    var anchor = top ? document.getElementById('btn-open').closest('.panel-head') : null;
+    if (anchor) anchor.after(saveMsg); else document.querySelector('.privacy-note').after(saveMsg);
+  }
+  var fileIn = document.getElementById('file-open');
+  document.getElementById('btn-open').addEventListener('click', function () { fileIn.value = ''; fileIn.click(); });
+  fileIn.addEventListener('change', function () { openFile(fileIn.files[0]); });
+  // 파일을 페이지에 끌어다 놓아도 열림
+  var dragN = 0;
+  function isFile(e) { return e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types || [], 'Files') >= 0; }
+  document.addEventListener('dragenter', function (e) { if (isFile(e)) { dragN++; document.body.classList.add('drop-on'); } });
+  document.addEventListener('dragleave', function (e) { if (isFile(e) && --dragN <= 0) { dragN = 0; document.body.classList.remove('drop-on'); } });
+  document.addEventListener('dragover', function (e) { if (isFile(e)) e.preventDefault(); });
+  document.addEventListener('drop', function (e) {
+    if (!isFile(e)) return;
+    e.preventDefault(); dragN = 0; document.body.classList.remove('drop-on');
+    openFile(e.dataTransfer.files[0]);
   });
 
   /* ---------- 방사형(폴라) 차트 ---------- */
